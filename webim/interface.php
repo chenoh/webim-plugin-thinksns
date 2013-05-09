@@ -53,9 +53,9 @@ function webim_set_user() {
 
     //$space = getspace( $_SGLOBAL['supe_uid'] );
     //http://github.com/webim/webim-for-uchome/issues/#issue/10
-//	$query = $_SGLOBAL['db']->query( "SELECT uid, username, name
-//		FROM ".tname('space')."
-//		WHERE uid = ".$_SGLOBAL['supe_uid'] );
+    //	$query = $_SGLOBAL['db']->query( "SELECT uid, username, name
+    //		FROM ".tname('space')."
+    //		WHERE uid = ".$_SGLOBAL['supe_uid'] );
 	session_start();
     $uid = $_SESSION['mid'];
 	//var_dump($uid);
@@ -66,11 +66,11 @@ function webim_set_user() {
     $imuser->id = $space['uname'];
     $imuser->nick = $space['uname'];
     #FIXME: pic path?
-    $imuser->pic_url = $siteUrl . '/data/upload/avatar/'. convertUidToPath($imuser->uid). '/original_30_30.jpg';
+    $imuser->pic_url = $siteUrl . '/data/upload/avatar/'. convertUidToPath($imuser->uid). '/original_50_50.jpg';
     if ($space['uname']) {
-        $imuser->default_pic_url = $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middel.jpg';
+        $imuser->default_pic_url = $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg';
     } else {
-        $imuser->default_pic_url = $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middel.jpg';
+        $imuser->default_pic_url = $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg';
     }
 
     $imuser->show = webim_gp('show') ? webim_gp('show') : "available";
@@ -101,8 +101,8 @@ function webim_get_online_buddies() {
                     "nick" => $value['uname'],
                     "group" => $group, //$friend_groups[$value['gid']],
                     "url" => profile_url($value['uid']),
-                    'default_pic_url' => $value['sex'] ? $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif' : $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif',
-                    "pic_url" => $siteUrl . "/data/uploads/avatar/" . $value['uid'] . "/middle.jpg",
+                    'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
+                    "pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
         );
     }
 	
@@ -116,8 +116,8 @@ function webim_get_online_buddies() {
                     "nick" => $value['uname'],
                     "group" => $_IMC['admin_groupname'], //$friend_groups[$value['gid']],
                     "url" => profile_url($value['uid']),
-                    'default_pic_url' => $value['sex'] ? $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif' : $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif',
-                    "pic_url" => $siteUrl . "/data/uploads/avatar/" . $value['uid'] . "/middle.jpg",
+                    'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
+                    "pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
 					);
 		 }
 	$return=array_merge($list,$guanfanguid);	 
@@ -152,7 +152,7 @@ function webim_get_buddies($names, $uids = null) {
 	  session_start();
       $uid = $_SESSION['mid'];
 	 
-	 $query = $db->query("SELECT m.uid, m.uname, f.fid FROM ts_user m LEFT OUTER JOIN  ts_weibo_follow f ON f.uid = $uid AND m.uid = f.uid WHERE m.uid <> $uid AND $where_sql");
+	 $query = $db->query("SELECT m.uid, m.uname, f.fid FROM ts_user m LEFT OUTER JOIN  ts_user_follow f ON f.uid = $uid AND m.uid = f.uid WHERE m.uid <> $uid AND $where_sql");
 
     while ($value = $query->fetch_array()) {
 
@@ -168,13 +168,13 @@ function webim_get_buddies($names, $uids = null) {
                     'uid' => $value['uid'],
                     'id' => $value['uname'],
                     'nick' => $value['uname'],
-                    'pic_url' => $siteUrl . "/data/uploads/avatar/" . $value['uid'] . "/middle.jpg",
                     'status' => '',
                     'status_time' => '',
                     'url' => profile_url($value['uid']),
                     'group' => $group,
-					
-                    'default_pic_url' => $value['sex'] ? $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif' : $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif');
+                    'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
+                    "pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
+                );
     }
     $guanfanguid=array();
 	$query = $db->query("SELECT * FROM ts_user where uid in (".$_IMC['admin_uid'].")");
@@ -182,14 +182,14 @@ function webim_get_buddies($names, $uids = null) {
 		    $guanfanguid[]=(object) array(
                     'uid' => $value['uid'],
                     'id' => $value['uname'],
-                     "nick" => "<font color='red'>".$value['uname']."</font>",
-                    'pic_url' => $siteUrl . "/data/uploads/avatar/" . $value['uid'] . "/middle.jpg",
+                    'nick' => "<font color='red'>".$value['uname']."</font>",
                     'status' => '',
                     'status_time' => '',
                     'url' => profile_url($value['uid']),
                     'group' => $_IMC['admin_groupname'],
-					
-                    'default_pic_url' => $value['sex'] ? $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif' : $siteUrl . '/public/themes/weibo/images/user_pic_middle.gif');
+                    'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
+                    "pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
+            );
 		 }
 	$return=array_merge($list,$guanfanguid);	 
     complete_status($return);
@@ -280,20 +280,11 @@ function webim_get_menu() {
 	session_start();
 	$uid=$_SESSION['mid'];
 	$value=$v=$vs=array();
-	$query = $db->query("SELECT m.*,mf.* FROM ts_app m LEFT JOIN  ts_user_app mf ON mf.app_id=m.app_id where mf.uid=".$uid."");
-   
-	 while ($value = $query->fetch_array()) {
-		$v[]= array("title" => $value['app_alias'], "icon" => $value['icon_url'], "link" => $siteUrl . "/index.php?app=".$value['app_name']."&mod=Index&act=index");
-		}
-	$query1 = $db->query("SELECT * FROM ts_app where status=1");
-
-	 while ($value1 = $query1->fetch_array()) {
-		$v1[]= array("title" => $value1['app_alias'], "icon" => $value1['icon_url'], "link" => $siteUrl . "/index.php?app=".$value1['app_name']."&mod=Index&act=index");
-		}
-    $menu = array_merge($v,$v1);
-
-
-    return $menu;
+	$query = $db->query("SELECT * FROM ts_app where status=1");
+	while ($value = $query->fetch_array()) {
+		$v[]= array("title" => $value['app_alias'], "icon" => $value['icon_url'], "link" => $siteUrl . "/index.php?app=".$value['app_name']);
+	}
+    return $v;
 }
 
 

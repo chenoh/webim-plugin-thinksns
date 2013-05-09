@@ -1,6 +1,6 @@
 <?php
 
-$im_version = '3.2.3';
+$im_version = '3.3.0';
 
 if ( !defined( 'WEBIM_PATH' ) )
 	define( 'WEBIM_PATH', dirname( __FILE__ ) . '/' );
@@ -35,13 +35,13 @@ if ( !defined( 'WEBIMDB_CHARSET' ) )
 	define( 'WEBIMDB_CHARSET', 'utf8' );
 
 
-require_once( WEBIM_PATH . 'Lib/functions.helper.php' );
-require_once( WEBIM_PATH . 'Lib/functions.json.php' );
-require_once( WEBIM_PATH . 'Lib/functions.actions.php' );
-require_once( WEBIM_PATH . 'Lib/class.webim_db.php' );
+require_once( WEBIM_PATH . 'lib/functions.helper.php' );
+require_once( WEBIM_PATH . 'lib/functions.json.php' );
+require_once( WEBIM_PATH . 'lib/functions.actions.php' );
+require_once( WEBIM_PATH . 'lib/class.webim_db.php' );
 
-require_once( WEBIM_PATH . 'Lib/http_client.php' );
-require_once( WEBIM_PATH . 'Lib/class.webim_client.php' );
+require_once( WEBIM_PATH . 'lib/http_client.php' );
+require_once( WEBIM_PATH . 'lib/class.webim_client.php' );
 
 /**
  * Custom interface

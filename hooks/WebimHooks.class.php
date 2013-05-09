@@ -21,54 +21,38 @@ class WebimHooks extends Hooks
 
 	public function saveConfig() {
         require SITE_PATH. '/addons/plugin/Webim/webim/config.php';
-	$theme = $_IMC['theme'];
-		if($_POST) {
-			$domain=$_POST['domain'];
-			$apikey=$_POST['apikey'];
-			$host=$_POST['host'];
-			$port=$_POST['port'];
-			$local=$_POST['local'];
-			$emot=$_POST['emot'];
-			$opacity=$_POST['opacity'];
-			$show_realname=$_POST['show_realname'];	
-			$disable_room=$_POST['disable_room'];	
-			$disable_chatlink=$_POST['disable_chatlink'];	
-			$disable_menu=$_POST['disable_menu'];
-       
-		if(!$domain || !$apikey || !$host || !$port) {
-			$this->error('注册域名、ApiKey、IM服務器和端口不能為空。');
-		}else{
-			$file = fopen(SITE_PATH. '/addons/plugin/Webim/webim/config.php', "wb");
+        if(!$_POST['domain']) {
+			$this->error('注册域名不能为空');
+            return;
+        }
+        $_IMC['domain'] = $_POST['domain'];
+        if(!$_POST['apikey']) {
+			$this->error('ApiKey不能为空');
+            return;
+        }
+        $_IMC['apikey'] = $_POST['apikey'];
+        if(!$_POST['host'] || !$_POST['port']) {
+			$this->error('IM服务器和端口不能为空');
+            return;
+        }
+        $_IMC['host'] = $_POST['host'];
+        $_IMC['port'] = $_POST['port'];
+        $_IMC['local'] = $_POST['local'];
+        $_IMC['emot'] = $_POST['emot'];
+        $_IMC['opacity'] = $_POST['opacity'];
+        $_IMC['show_realname'] = $_POST['show_realname'] == 'true' ? true : false; 
+        $_IMC['disable_room'] = $_POST['disable_room'] == 'true' ? true : false;	
+        $_IMC['disable_chatlink'] = $_POST['disable_chatlink'] == 'true' ? true : false;	
+        $_IMC['disable_menu'] = $_POST['disable_menu'] == 'true' ? true : false;
+        $this->writeConfig($_IMC);
+        $this->success('设置成功');
+	}
 
-			$data=<<<EOT
- <?php
-CFG= array();
-CFG=array('version'=>'3.3.0',
-	'enable'=>true,
-	'domain'=>'$domain',
-	'apikey'=>'$apikey',
-	'host'=>'$host',
-	'port'=>'$port',
-	'theme'=>'$theme',
-	'local'=>'$local',
-	'show_realname'=>$show_realname,
-	'disable_room'=>$disable_room,
-	'disable_chatlink'=>$disable_chatlink,
-	'enable_shortcut'=>true,
-	'emot'=>'default',
-	'opacity'=>'$opacity',
-	'disable_menu'=>$disable_menu,
-	'enable_login'=>false,
-	'host_from_domain'=>false,
-);
-EOT;
-            $data = str_replace('CFG', '$_IMC', $data);
-		    fwrite($file, $data);  
-		    @fclose($file);
-
-		    $this->success('设置成功');
-		  }
-		}
+	public function writeConfig($cfg) {
+		$data = '<?php $_IMC=array(); $_IMC= ' . var_export($cfg, true) . ';';
+		$file = fopen(SITE_PATH. '/addons/plugin/Webim/webim/config.php', "wb");
+		fwrite($file, $data);  
+		@fclose($file);
 	}
 
     public function scanDir( $dir ) {
@@ -97,13 +81,6 @@ EOT;
         }
 		$this->assign('themes', $themes);
 	    $this->display('skin');
-	}
-
-	public function writeConfig($cfg) {
-		$data = '<?php $_IMC=array(); $_IMC= ' . var_export($cfg, true) . ';';
-		$file = fopen(SITE_PATH. '/addons/plugin/Webim/webim/config.php', "wb");
-		fwrite($file, $data);  
-		@fclose($file);
 	}
 
 	public function saveSkin() {
@@ -139,7 +116,4 @@ EOT;
 		    $this->success('清除成功: ' . $sql);
 	    }
 	}
-
-
 }
-
