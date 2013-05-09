@@ -1,4 +1,11 @@
 webim-plugin-thinksns
 =====================
 
-webim plugin for thinksns
+webim plugin for thinksns v3
+
+
+install
+=======
+
+
+
