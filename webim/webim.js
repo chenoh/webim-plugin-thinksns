@@ -48,8 +48,7 @@
 	ui.addApp("room");
 	ui.addApp("notification");
 	ui.addApp("setting", {"data": webim.setting.defaults.data});
-	//if( !_IMC.disable_chatlink )ui.addApp("chatlink", { off_link_class: /r_option|spacelink/i
-	});
+	//if( !_IMC.disable_chatlink )ui.addApp("chatlink", { off_link_class: /r_option|spacelink/i });
 	ui.render();
 	_IMC['is_login'] && im.autoOnline() && im.online();
 })(webim);
