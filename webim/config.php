@@ -16,6 +16,6 @@
   'disable_menu' => false,
   'enable_login' => false,
   'host_from_domain' => false,
-  'admin_uid' => ' 1',
+  'admin_uid' => '0',
   'admin_groupname' => 'd',
 );
