@@ -1,8 +1,8 @@
 <?php $_IMC=array(); $_IMC= array (
   'version' => '3.3.0',
   'enable' => true,
-  'domain' => 't.test.com',
-  'apikey' => '912e5caffdeb83779d3a',
+  'domain' => '',
+  'apikey' => '',
   'host' => 'www.webim20.cn',
   'port' => '8000',
   'theme' => 'base',
