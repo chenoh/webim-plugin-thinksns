@@ -17,5 +17,5 @@
   'enable_login' => false,
   'host_from_domain' => false,
   'admin_uid' => '0',
-  'admin_groupname' => 'd',
+  'admin_groupname' => 'admin',
 );
