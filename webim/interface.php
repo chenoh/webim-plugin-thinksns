@@ -110,15 +110,17 @@ function webim_get_online_buddies() {
 	
 	$query = $db->query("SELECT * FROM ts_user where uid in (".$_IMC['admin_uid'].")");
 	 while ($value = $query->fetch_array()) {
-		    $guanfanguid[]=(object) array(
-                     "uid" => $value['uid'],
-                    "id" => $value['uname'],
-                    "nick" => $value['uname'],
-                    "group" => $_IMC['admin_groupname'], //$friend_groups[$value['gid']],
-                    "url" => profile_url($value['uid']),
-                    'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
-                    "pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
-					);
+			if($imuser->uid != $value['uid']) {
+				$guanfanguid[]=(object) array(
+						"uid" => $value['uid'],
+						"id" => $value['uname'],
+						"nick" => $value['uname'],
+						"group" => $_IMC['admin_groupname'],
+						"url" => profile_url($value['uid']),
+						'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
+						"pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
+						);
+			}
 		 }
 	$return=array_merge($list,$guanfanguid);	 
     complete_status($return);
@@ -179,17 +181,19 @@ function webim_get_buddies($names, $uids = null) {
     $guanfanguid=array();
 	$query = $db->query("SELECT * FROM ts_user where uid in (".$_IMC['admin_uid'].")");
 	 while ($value = $query->fetch_array()) {
-		    $guanfanguid[]=(object) array(
-                    'uid' => $value['uid'],
-                    'id' => $value['uname'],
-                    'nick' => "<font color='red'>".$value['uname']."</font>",
-                    'status' => '',
-                    'status_time' => '',
-                    'url' => profile_url($value['uid']),
-                    'group' => $_IMC['admin_groupname'],
-                    'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
-                    "pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
-            );
+			if($imuser->uid != $value['uid']) {
+				$guanfanguid[]=(object) array(
+						'uid' => $value['uid'],
+						'id' => $value['uname'],
+						'nick' => "<font color='red'>".$value['uname']."</font>",
+						'status' => '',
+						'status_time' => '',
+						'url' => profile_url($value['uid']),
+						'group' => $_IMC['admin_groupname'],
+						'default_pic_url' => $siteUrl . '/addons/theme/stv1/_static/image/noavatar/middle.jpg',
+						"pic_url" =>  $siteUrl . '/data/upload/avatar/'. convertUidToPath($value['uid']). '/original_50_50.jpg',
+				);
+			}
 		 }
 	$return=array_merge($list,$guanfanguid);	 
     complete_status($return);
