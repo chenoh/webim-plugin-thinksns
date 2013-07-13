@@ -1,10 +1,10 @@
 <?php $_IMC=array(); $_IMC= array (
-  'version' => '3.3.0',
+  'version' => '4.0',
   'enable' => true,
   'domain' => '',
   'apikey' => '',
-  'host' => 'www.webim20.cn',
-  'port' => '8000',
+  'host' => 'webim20.cn',
+  'port' => '8888',
   'theme' => 'base',
   'local' => 'zh-CN',
   'show_realname' => false,
