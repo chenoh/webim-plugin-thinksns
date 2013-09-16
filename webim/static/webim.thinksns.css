@@ -2,17 +2,23 @@
  * Webim UI v3.0.1
  * http://www.webim20.cn/
  *
- * Copyright (c) 2010 Hidden
+ * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Fri Jul 12 19:56:03 2013 +0800
- * Commit: 096b21e744741d1e3e1d401a5ac195f892724a4b
+ * Date: Wed Sep 11 17:57:04 2013 +0800
+ * Commit: 179b345c9b291513f8dfea93671f29d1ba3640ad
  */
 
 body {
         margin: 0;
 	/** Fix the font size in google chrome. http://www.mangguo.org/google-chrome-chinese-minimum-font-size/ */
 	-webkit-text-size-adjust: none;
+}
+
+.webim, .webim *,.webim *:before, .webim *:after {
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box; 
 }
 
 /* some sites removes and neutralizes the inconsistent default styling of HTML elements. */
@@ -24,7 +30,13 @@ body {
 .webim img{
         border:0;
 }
-.webim{
+
+.webim label{
+	font-size: 1em;
+	display: inline;
+}
+
+#webim, .webim, .webim h1, .webim h2, .webim h3, .webim h4, .webim h5, .webim h6{
         font-size: 10px;
         line-height: 1.5;
         font-family: "lucida grande", tahoma, helvetica, arial, "bitstream vera sans", sans-serif;
@@ -84,6 +96,13 @@ a .webim-icon, a .ui-icon{
 .webim-hide{
 	display: none !important;
 }
+
+.webim-button{
+	display: inline-block;
+	padding: 3px 8px;
+}
+
+
 /*
  * jQuery UI CSS Framework 3.0.1
  *
@@ -130,10 +149,9 @@ a .webim-icon, a .ui-icon{
 }
 .webim-icon-home{
 	background-position:0 0;
-
- }
- .webim-icon-buddy{
-	 background-position:-16px 0;
+}
+.webim-icon-buddy{
+	background-position:-16px 0;
  }
  .webim-icon-notification{
 	 background-position:-32px 0;
@@ -178,8 +196,12 @@ a .webim-icon, a .ui-icon{
 	 background-position:-48px -32px;
  }
 
+ .webim-icon-upload{
+	 background-position:-16px -48px;
+}
+
 .webim-icon-available{
-	 background-position:0 -80px;
+	background-position:0 -80px;
 }
 
 .webim-icon-dnd{
@@ -196,7 +218,7 @@ a .webim-icon, a .ui-icon{
 }
 /*use bullet*/
 .webim-icon-available{
-	 background-position:0 -64px;
+	background-position:0 -64px;
 }
 
 .webim-icon-dnd{
@@ -231,6 +253,35 @@ a .webim-icon, a .ui-icon{
         border-left-width: 0;
         border-right-width: 0;
         width: 100%;
+}
+.webim-upload{
+	display: none;
+}
+
+.webim-upload-show{
+	display: block;
+}
+
+.webim-chat .webim-upload{
+	position: absolute;
+	bottom: 0;
+	padding: 10px 0;
+	border-left-width: 0;
+	border-right-width: 0;
+	width: 100%;
+}
+
+.webim-upload input{
+	float: left;
+	width: 130px;
+	margin: 3px 10px;
+}
+
+.webim-upload .webim-upload-submit{
+	width: auto;
+	margin: 0 10px;
+	float: right;
+	padding: 3px 10px;
 }
 .webim .webim-history-actions{
         margin:0;
@@ -618,6 +669,7 @@ a .webim-icon, a .ui-icon{
 
 .webim .webim-chat-content{
 	height: 16em;
+	position: relative;
 }
 
 .webim .webim-chat-main{
@@ -668,6 +720,7 @@ a .webim-icon, a .ui-icon{
 	padding: 0 .3em;
 	border-left-width: 0;
 	border-right-width: 0;
+	overflow: hidden;
 }
 .webim .webim-chat-tools a, .webim .webim-chat-tools a em{
 	float: left;
@@ -690,7 +743,7 @@ a .webim-icon, a .ui-icon{
 }
 
 .webim .webim-member{
-	margin-top:  -.1em;
+	margin-top:  -1px;
 	height: 16em;
 	width: 7em;
 	left: -7.2em;
@@ -769,7 +822,10 @@ a .webim-icon, a .ui-icon{
 }
 
 #webim-buddy .webim-buddy-content{
-        padding: .2em .5em .3em;
+        padding: .2em 0 1.2em;
+	/*
+	padding: 0;
+	*/
         overflow-y: auto;
         position:relative;
 }
@@ -780,7 +836,8 @@ a .webim-icon, a .ui-icon{
 }
 
 #webim-buddy.webim-buddy-scroll .webim-buddy-content{
-        /* height: 25em; */
+	/* height: 25em; */
+	height: 25em;
 }
 #webim-buddy.webim-buddy-scroll .webim-buddy-search{
         display: block;
@@ -796,7 +853,7 @@ a .webim-icon, a .ui-icon{
 	*/
 }
 #webim-buddy .webim-buddy-empty{
-        padding: 0 0 1em;
+        padding: .5em .5em 1em;
 }
 
 #webim-buddy .webim-buddy-offline a{
@@ -811,12 +868,27 @@ a .webim-icon, a .ui-icon{
         border-bottom-width: 1px;
         padding: .2em .5em 0;
 }
+
 #webim-buddy ul li{
 }
+
 #webim-buddy ul li a{
         display:block;
-        margin-left:3em;
-        padding: .3em 0;
+	padding: 5px .5em 5px 3.5em;
+	position: relative;
+}
+
+#webim-buddy ul li a.ui-state-highlight{
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border-right-width: 0;
+	border-left-width: 0;
+}
+
+#webim-buddy .webim-window-tab-count{
+	top: auto;
+	margin-left: 0;
+	right: 3px;
 }
 
 #webim-buddy ul li .webim-icon{
@@ -855,7 +927,7 @@ a .webim-icon, a .ui-icon{
 }
 
 #webim-buddy.webim-buddy-simple ul li a{
-	margin-left: .3em;
+	padding-left: .3em;
 }
 #webim-buddy.webim-buddy-simple ul li a strong{
 	display: inline;
@@ -948,6 +1020,7 @@ a .webim-icon, a .ui-icon{
 .webim .webim-user-show p{
 	position: absolute;
 	z-index: 2;
+	margin-top: -50px;
 }
 
 .webim .webim-user-show p a{
@@ -1049,7 +1122,7 @@ a .webim-icon, a .ui-icon{
         padding: 1em 2em;
 }
 #webim-room .webim-room-content{
-        padding: .2em .5em 0;
+        padding: .2em 0 1.2em;
         position:relative;
 }
 /*fuck ie6  why ?*/
@@ -1091,13 +1164,36 @@ a .webim-icon, a .ui-icon{
         border-bottom-width: 1px;
         padding: .2em .5em 0;
 }
+
 #webim-room ul li{
 }
+
 #webim-room ul li a{
         display:block;
-        margin-left:3em;
-        padding: .3em 0;
+	padding: 5px .5em 5px 3.5em;
+	position: relative;
 }
+
+#webim-room ul li a.ui-state-highlight{
+	padding-top: 4px;
+	padding-bottom: 4px;
+	border-right-width: 0;
+	border-left-width: 0;
+}
+
+#webim-room .webim-window-tab-count{
+	top: auto;
+	margin-left: 0;
+	right: 3px;
+	z-index: 5;
+}
+
+#webim-room ul li .webim-button{
+	float: right;
+	position: relative;
+	z-index: 2;
+}
+
 #webim-room ul li a img{
         display:block;
         float:left;
@@ -1114,6 +1210,43 @@ a .webim-icon, a .ui-icon{
 #webim-room ul li a span{
         display: block;
 }
+
+#webim-room .webim-room-actions{
+	margin: 5px 10px;
+}
+
+#webim-room .webim-room-discussion{
+	padding: 10px;
+}
+
+#webim-room .webim-room-discussion p{
+	margin: 8px 0 0;
+}
+
+#webim-room .webim-room-discussion .webim-button{
+	margin-right: 10px;
+}
+
+#webim-room .webim-room-discussion-name{
+	width: 150px;
+}
+
+#webim-room .webim-room-discussion-list{
+	height: 200px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin-bottom: 10px;
+}
+
+#webim-room .webim-room-discussion-list li{
+	padding: 5px 10px;
+}
+
+#webim-room .webim-room-discussion-list li input{
+	margin-right: 10px;
+}
+
+
 
 .webim-menu {
         padding:1em .5em;

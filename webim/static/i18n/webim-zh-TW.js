@@ -93,6 +93,14 @@ webim.ui.i18n.store('zh-TW',{
 	"question": "\u554f\u984c",        
 	"answer": "\u7b54\u6848",
 	"login": "\u767b\u9304",
+	"upload": "\u4e0a\u50b3",
+	"discussion": "\u8a0e\u8ad6\u7d44",
+	"discussion name": "\u8a0e\u8ad6\u7d44\u540d\u7a31",
+	"create discussion": "\u5275\u5efa\u8a0e\u8ad6\u7d44",
+	"select discussion buddies": "\u9078\u64c7\u52a0\u5165\u8a0e\u8ad6\u7d44\u7684\u597d\u53cb",
+	"confirm": "\u78ba\u5b9a",
+	"cancel": "\u53d6\u6d88",
+	"invite": "\u9080\u8bf7",
 	"exit": "\u9000\u51fa"
 });
 
