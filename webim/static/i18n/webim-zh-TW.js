@@ -101,6 +101,8 @@ webim.ui.i18n.store('zh-TW',{
 	"confirm": "\u78ba\u5b9a",
 	"cancel": "\u53d6\u6d88",
 	"invite": "\u9080\u8bf7",
+	"visitor":"\u8a2a\u5ba2",
+	"manager":"\u7ba1\u7406\u54e1",
 	"exit": "\u9000\u51fa"
 });
 

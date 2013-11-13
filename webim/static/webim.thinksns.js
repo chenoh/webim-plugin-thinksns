@@ -5,8 +5,8 @@
  * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Fri Aug 30 18:09:39 2013 +0800
- * Commit: 571a5ef5ad8faf5780602a8dd2b8721d23b48afb
+ * Date: Wed Sep 18 21:10:11 2013 +0800
+ * Commit: 0b37f2df9f6ca19abbb5f40df0b502a07fc0c4ce
  */
 (function(window, document, undefined){
 
@@ -1316,10 +1316,10 @@ extend(webim.prototype, {
 	_ready: function( post_data ) {
 		var self = this;
 		self.state = webim.BEFOREONLINE;
-		self._unloadFun = window.onbeforeunload;
-		window.onbeforeunload = function(){
-			self._deactivate();
-		};
+		//self._unloadFun = window.onbeforeunload;
+		//window.onbeforeunload = function(){
+		//	self._deactivate();
+		//};
 		self.trigger( "beforeOnline", [ post_data ] );
 	},
 	_go: function() {
@@ -1359,7 +1359,7 @@ extend(webim.prototype, {
 			return;
 		}
 		self.state = webim.OFFLINE;
-		window.onbeforeunload = self._unloadFun;
+		//window.onbeforeunload = self._unloadFun;
 		self.data.user.presence = "offline";
 		self.data.user.show = "unavailable";
 		self.buddy.clear();
@@ -1424,7 +1424,7 @@ extend(webim.prototype, {
 		}
 
 		function grepPresence( a ){
-			return a.type == "online" || a.type == "offline";
+			return a.type == "online" || a.type == "offline" || a.type == "show";
 		}
 		function grepRoomPresence( a ){
 			return a.type == "join" || a.type == "leave";
@@ -2133,8 +2133,8 @@ model("history", {
  * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Wed Sep 11 17:57:04 2013 +0800
- * Commit: 179b345c9b291513f8dfea93671f29d1ba3640ad
+ * Date: Sat Nov 9 16:11:32 2013 +0800
+ * Commit: 2ed4c6ec190a213dd53f43b523ca8c09be11d3e4
  */
 (function(window,document,undefined){
 
@@ -2581,60 +2581,81 @@ function upload( element, callback ){
 
 
 var sound = (function(){
-        var playSound = true;
-        var play = function(url){
-            try {
-                document.getElementById('webim-flashlib').playSound(url ? url : '/sound/sound.mp3');
-            } 
-            catch (e){
-            }
-        };
-        var _urls = {
-                lib: "sound.swf",
-                msg:"sound/msg.mp3"
-        };
-        return {
-                enable:function(){
-                        playSound = true;
-                },
-                disable:function(){
-                        playSound = false;
-                },
-                init: function(urls){
-                        extend(_urls, urls);
-			/*
-                        swfobject.embedSWF(_urls.lib + "?_" + new Date().getTime(), "webim-flashlib-c", "100", "100", "9.0.0", null, null, {
-                        allowscriptaccess:'always'
-                        }, {
-                            id: 'webim-flashlib'
-                        });
-			*/
-			var lib_url = _urls.lib + "?_" + new Date().getTime();
-			if (navigator.plugins && navigator.mimeTypes && navigator.mimeTypes.length) { // netscape plugin architecture
-				var html = '<embed type="application/x-shockwave-flash" width="10" height="10" id="webim-flashlib" allowscriptaccess="always" src="'+lib_url+'" />';
-			}else{
-				var html = '<object width="10" height="10" id="webim-flashlib" type="application/x-shockwave-flash" data="'+ lib_url + '">\
-				<param name="allowScriptAccess" value="always" />\
-				<param name="movie" value="'+lib_url+'" />\
-				<param name="scale" value="noscale" />\
-				</object>';
+	var playSound = true;
+	var webimAudio;
+	var play = function(url){
+		if( window.Audio ) {
+			if( !webimAudio ) {
+				var webimAudio = new Audio();
 			}
+			webimAudio.src = url;
+			webimAudio.play();
+		}else if(navigator.userAgent.indexOf('MSIE') >= 0){
 			try {
-				document.getElementById('webim-flashlib-c').innerHTML = html;
+				document.getElementById('webim-bgsound').src = url ? url : '/sound/sound.mp3';
 			} 
 			catch (e){
 			}
+		}
+		/*
+		 try {
+		 document.getElementById('webim-flashlib').playSound(url ? url : '/sound/sound.mp3');
+		 } 
+		 catch (e){
+		 }
+		 */
+	};
+	var _urls = {
+		lib: "sound.swf",
+		msg:"sound/msg.mp3"
+	};
+	return {
+		enable:function(){
+			playSound = true;
 		},
-                play: function(type){
-                        var url = isUrl(type) ? type : _urls[type];
-                        playSound && play(url);
-                }
-        }
+		disable:function(){
+			playSound = false;
+		},
+		init: function(urls){
+			extend(_urls, urls);
+			if(!window.Audio && navigator.userAgent.indexOf('MSIE') >= 0){
+				document.getElementById('webim-flashlib-c').innerHTML = '<bgsound id="webim-bgsound" src="#" loop="1">';
+			}
+			/*
+			 swfobject.embedSWF(_urls.lib + "?_" + new Date().getTime(), "webim-flashlib-c", "100", "100", "9.0.0", null, null, {
+			 allowscriptaccess:'always'
+			 }, {
+			 id: 'webim-flashlib'
+			 });
+			 */
+			/*
+			 var lib_url = _urls.lib + "?_" + new Date().getTime();
+			 if (navigator.plugins && navigator.mimeTypes && navigator.mimeTypes.length) { // netscape plugin architecture
+			 var html = '<embed type="application/x-shockwave-flash" width="10" height="10" id="webim-flashlib" allowscriptaccess="always" src="'+lib_url+'" />';
+			 }else{
+			 var html = '<object width="10" height="10" id="webim-flashlib" type="application/x-shockwave-flash" data="'+ lib_url + '">\
+			 <param name="allowScriptAccess" value="always" />\
+			 <param name="movie" value="'+lib_url+'" />\
+			 <param name="scale" value="noscale" />\
+			 </object>';
+			 }
+			 try {
+			 document.getElementById('webim-flashlib-c').innerHTML = html;
+			 } 
+			 catch (e){
+			 }
+			 */
+		},
+		play: function(type){
+			var url = isUrl(type) ? type : _urls[type];
+			playSound && play(url);
+		}
+	}
 })();
 
 /*
-* set display frequency.
-*/
+ * set display frequency.
+ */
 var titleShow = (function(){
 	var _showNoti = false;
 	addEvent(window,"focus",function(){
@@ -3503,7 +3524,18 @@ widget("layout",{
 		var w = (windowWidth() - 45) - $.shortcut.offsetWidth - $.widgets.offsetWidth - 70;
 		self.maxVisibleTabs = parseInt(w / self.tabWidth);
 		self._fitUI();
+		self._autoResizeWindow();
 		self._ready = true;
+	},
+	_autoResizeWindow: function(){
+		var self = this, $ = self.$
+		  , width = $.widgets.offsetWidth;
+		for( var key in self.widgets ) {
+			var window = self.widgets[key] && self.widgets[key].window;
+			window = window && window.$ && window.$.window;
+			if( window )
+				window.style.width = width + "px";
+		}
 	},
 	_updatePrevCount: function(activeId){
 		var self = this, tabIds = self.tabIds, max = self.maxVisibleTabs, len = tabIds.length, id = activeId, count = self.prevCount;
@@ -5132,6 +5164,7 @@ app("buddy", function( options ){
 	//some buddies online.
 	buddy.bind("online", function( e, data){
 		buddyUI.add(grep(data, grepVisible));
+		buddyUI.update(data);
 	});
 	//some buddies offline.
 	buddy.bind("offline", function( e, data){
@@ -5583,6 +5616,9 @@ widget("room",{
 		};
 		self._count = 0;
 		show(self.$.empty);
+		if( !self.options.discussion )
+			hide( self.$.create );
+
 		//self._initEvents();
 	},
 	_initEvents: function(){
@@ -5911,6 +5947,7 @@ widget("chatlink",
 
 		function parse_id(link, re){
 			if(!link)return false;
+			if(!re)return false;
 			var re_len = re.length; 
 			for(var i = 0; i < re_len; i++){
 				var ex = re[i].exec(link);
@@ -5966,7 +6003,7 @@ widget("chatlink",
 		var self = this, list = self.list, anthors = self.anthors, l = data.length, i, da, uid, li, anthor;
 		for(i = 0; i < l; i++){
 			da = data[i];
-			if(da.id && (uid = da.uid) && (li = list[uid])){
+			if(da.id && (uid = da.uid || da.id) && (li = list[uid])){
 				anthor = anthors[uid];
 				if(!li.elements && anthor){
 					li.elements = [];
@@ -5989,7 +6026,7 @@ widget("chatlink",
 		var self = this, list = self.list, anthors = self.anthors, l = data.length, i, da, uid, li, anthor;
 		for(i = 0; i < l; i++){
 			da = data[i];
-			if(da.id && (uid = da.uid) && (li = list[uid])){
+			if(da.id && (uid = da.uid || da.id) && (li = list[uid])){
 				li.elements && each(li.elements, function(n, v){
 					remove(v);
 				});
