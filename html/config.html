@@ -2,14 +2,14 @@
 
 <div class="so_main">
     <div class="page_tit">WebIM配置</div>
-    <div style="heigh:50px; background-color:#FFC; border: 1px #CCC solid; padding:30px; color:#F00;">注意: webim/config.php须设置为可写<br><br>WebIM插件通过跨域JSONP实现，以保证对ThinkSNS主站没有负载压力。使用前请前往【<a href="http://www.webim20.cn" target="_blank"><strong>http://www.webim20.cn</strong></a>】购买独立的消息服务器，或者申请免费在线ApiKey。</div>
+    <div style="heigh:50px; background-color:#FFC; border: 1px #CCC solid; padding:30px; color:#F00;">注意: webim/config.php须设置为可写<br><br>WebIM插件通过跨域JSONP实现，以保证对ThinkSNS主站没有负载压力。使用前请前往【<a href="http://nextalk.im" target="_blank"><strong>http://nextalk.im</strong></a>】购买独立的消息服务器，或者申请免费在线ApiKey。</div>
     <div class="form2">
         <form method="post" action="{:Addons::adminUrl('saveConfig')}">
             <dl class="lineD">
                 <dt>注册域名：</dt>
                 <dd>
                     <input class="text" type="text" id="domain" value="{$IMC.domain}" name="domain">
-                    <p>在线版用户输入在webim20.cn中注册的域名</p>
+                    <p>在线版用户输入在nextalk.im中注册的域名</p>
                 </dd>
             </dl>
 

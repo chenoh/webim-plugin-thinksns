@@ -1,17 +1,17 @@
 <?php
 /**
  * WebIM插件
- * @author ery.lee@gmail.com
- * @version 2.0
- * @copyright www.webim20.cn
+ * @author ery.lee at gmail.com
+ * @version 5.0
+ * @copyright nextalk.im
  */
 class WebimAddons extends NormalAddons
 {
-    protected $version = '2.0';
-    protected $author  = '杭州巨鼎信息技術有限公司';
+    protected $version = '5.1';
+    protected $author  = '杭州巨鼎信息技术有限公司';
     protected $thanks  = 'isjava';
-    protected $site    = 'http://www.webim20.cn';
-    protected $info    = '类似新浪微博的WebIM插件';
+    protected $site    = 'http://nextalk.im';
+    protected $info    = 'WebIM微博站内即时消息插件';
     protected $pluginName = 'WebIM';
     // 安装时需要执行的sql文件名
     protected $sqlfile = 'install.sql';    
@@ -69,7 +69,7 @@ class WebimAddons extends NormalAddons
                 ) ENGINE=MyISAM;
                 CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_settings` (
                     `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-                    `uid` mediumint(8) unsigned NOT NULL,
+                    `uid` int(11) unsigned NOT NULL,
                     `web` blob,
                     `air` blob,
                     `created_at` date DEFAULT NULL,
