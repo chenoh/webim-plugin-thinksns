@@ -9,18 +9,17 @@ class WebimHooks extends Hooks
     }
 
     public function public_footer($param) {
-        require SITE_PATH. '/addons/plugin/Webim/webim/config.php';
-        echo '<script src="'. SITE_URL .'/addons/plugin/Webim/webim/custom.js.php"></script> ';
+        echo '<script src="'. SITE_URL .'/addons/plugin/Webim/index.php?action=run"></script> ';
     }
 
 	public function config(){
-		require SITE_PATH. '/addons/plugin/Webim/webim/config.php';
-		$this->assign('IMC', $_IMC);
+		$imc = require_once SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+		$this->assign('IMC', $imc);
 		$this->display('config');
 	}
 
 	public function saveConfig() {
-        require SITE_PATH. '/addons/plugin/Webim/webim/config.php';
+        require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
         if(!$_POST['domain']) {
 			$this->error('注册域名不能为空');
             return;
@@ -41,16 +40,16 @@ class WebimHooks extends Hooks
         $_IMC['emot'] = $_POST['emot'];
         $_IMC['opacity'] = $_POST['opacity'];
         $_IMC['show_realname'] = $_POST['show_realname'] == 'true' ? true : false; 
-        $_IMC['disable_room'] = $_POST['disable_room'] == 'true' ? true : false;	
-        $_IMC['disable_chatlink'] = $_POST['disable_chatlink'] == 'true' ? true : false;	
-        $_IMC['disable_menu'] = $_POST['disable_menu'] == 'true' ? true : false;
+        $_IMC['enable_room'] = $_POST['enable_room'] == 'true' ? true : false;	
+        $_IMC['enable_chatlink'] = $_POST['enable_chatlink'] == 'true' ? true : false;	
+        $_IMC['enable_menu'] = $_POST['enable_menu'] == 'true' ? true : false;
         $this->writeConfig($_IMC);
         $this->success('设置成功');
 	}
 
 	public function writeConfig($cfg) {
-		$data = '<?php $_IMC=array(); $_IMC= ' . var_export($cfg, true) . ';';
-		$file = fopen(SITE_PATH. '/addons/plugin/Webim/webim/config.php', "wb");
+		$data = '<?php return ' . var_export($cfg, true) . ';';
+		$file = fopen(SITE_PATH. '/addons/plugin/Webim/conf/config.php', "wb");
 		fwrite($file, $data);  
 		@fclose($file);
 	}
@@ -66,9 +65,9 @@ class WebimHooks extends Hooks
     }
 
 	public function skin() {
-		require SITE_PATH. '/addons/plugin/Webim/webim/config.php';
-        $path = SITE_PATH. '/addons/plugin/Webim/webim/static/themes';
-		$theme_url = SITE_URL. '/addons/plugin/Webim/webim/static/themes';
+		require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+        $path = SITE_PATH. '/addons/plugin/Webim/static/themes';
+		$theme_url = SITE_URL. '/addons/plugin/Webim/static/themes';
 
         $files = $this->scanDir($path);
         $themes = array();
@@ -85,7 +84,7 @@ class WebimHooks extends Hooks
 
 	public function saveSkin() {
 		if($_POST) {
-			require SITE_PATH. '/addons/plugin/Webim/webim/config.php';
+			require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
 			$_IMC['theme'] = $_POST['theme'];
 			$this->writeConfig($_IMC);
 		    $this->success('设置成功, 主题设置为: ' . $_POST['theme']);

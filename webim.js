@@ -5,21 +5,21 @@
 	var webim = window.webim;
 
 	webim.route( {
-		online: path + "im.php?webim_action=online&domain=nextalk.im",
-		offline: path + "im.php?webim_action=offline",
-		deactivate: path + "im.php?webim_action=refresh",
-		message: path + "im.php?webim_action=message",
-		presence: path + "im.php?webim_action=presence",
-		status: path + "im.php?webim_action=status",
-		setting: path + "im.php?webim_action=setting",
-		history: path + "im.php?webim_action=history",
-		clear: path + "im.php?webim_action=clear_history",
-		download: path + "im.php?webim_action=download_history",
-		members: path + "im.php?webim_action=members",
-		join: path + "im.php?webim_action=join",
-		leave: path + "im.php?webim_action=leave",
-		buddies: path + "im.php?webim_action=buddies",
-		notifications: path + "im.php?webim_action=notifications"
+		online: path + "index.php?action=online",
+		offline: path + "index.php?action=offline",
+		deactivate: path + "index.php?action=refresh",
+		message: path + "index.php?action=message",
+		presence: path + "index.php?action=presence",
+		status: path + "index.php?action=status",
+		setting: path + "index.php?action=setting",
+		history: path + "index.php?action=history",
+		clear: path + "index.php?action=clear_history",
+		download: path + "index.php?action=download_history",
+		members: path + "index.php?action=members",
+		join: path + "index.php?action=join",
+		leave: path + "index.php?action=leave",
+		buddies: path + "index.php?action=buddies",
+		notifications: path + "index.php?action=notifications"
 	} );
 
 	webim.ui.emot.init({"dir": path + "static/images/emot/default"});
@@ -39,15 +39,15 @@
 	if( _IMC.enable_shortcut ) ui.layout.addShortcut( _IMC.menu );
 
 	ui.addApp("buddy", {
-		showUnavailable: _IMC.showUnavailable,
+		showUnavailable: _IMC.show_unavailable,
 		is_login: _IMC['is_login'],
 		disable_login: true,
 		loginOptions: _IMC['login_options']
 	} );
-	if( !_IMC.disable_room )ui.addApp("room", { discussion: false}); //TODO: 
-	if( !_IMC.disable_noti )ui.addApp("notification");
+	if( _IMC.enable_room )ui.addApp("room", { discussion: false}); //TODO: 
+	if( _IMC.enable_noti )ui.addApp("notification");
 	ui.addApp("setting", {"data": webim.setting.defaults.data});
-	//if( !_IMC.disable_chatlink )ui.addApp("chatlink", { off_link_class: /r_option|spacelink/i });
+	//if( _IMC.enable_chatlink )ui.addApp("chatlink", { off_link_class: /r_option|spacelink/i });
 	ui.render();
 	_IMC['is_login'] && im.autoOnline() && im.online();
 })(webim);

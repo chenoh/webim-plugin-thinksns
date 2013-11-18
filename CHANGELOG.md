@@ -3,6 +3,7 @@ CHANGELOG
 
 v5.1
 --------------------------------------
+* 系统改进: 按ThinkSNS架构重写
 * Bug修改: interface.php只支持ts_前缀库表查询
 * Bug修改: WebimAddons.class.php 安装未创建数据库表
 * 文档修改: 安装文档说明增加清理缓存说明
