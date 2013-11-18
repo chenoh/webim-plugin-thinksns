@@ -1,7 +1,0 @@
-0. rewrite WebimClient.class.php
-1. index.php to replace im.php 
-2. WebimAction.class.php to handle all actions
-3. SetingModel.class.php
-4. HistoryModel.class.php
-5. ThinkIM.class.php to integrate with site
-
