@@ -13,15 +13,13 @@ class WebimHooks extends Hooks
     }
 
 	public function config(){
-		echo "fuckk....";
-		$imc = require_once SITE_PATH. '/addons/plugin/Webim/conf/config.php';
-		var_dump($imc);
+		$imc = require_once SITE_PATH . '/addons/plugin/Webim/conf/config.php';
 		$this->assign('IMC', $imc);
-		//$this->display('config');
+		$this->display('config');
 	}
 
 	public function saveConfig() {
-        $cfg = require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+        $cfg = require SITE_PATH . '/addons/plugin/Webim/conf/config.php';
         if(!$_POST['domain']) {
 			$this->error('注册域名不能为空');
             return;
@@ -36,20 +34,20 @@ class WebimHooks extends Hooks
 			$this->error('IM服务器和端口不能为空');
             return;
         }
-		$cfg['enable'] = $this->toBool($_POST['enable']),
+		$cfg['enable'] = $this->toBool($_POST['enable']);
         $cfg['host'] = $_POST['host'];
         $cfg['port'] = $_POST['port'];
         $cfg['local'] = $_POST['local'];
         $cfg['emot'] = $_POST['emot'];
         $cfg['opacity'] = $_POST['opacity'];
-        $cfg['show_realname'] = $this->toBool($_POST['show_realname']),
-        $cfg['enable_room'] = $this->toBool($_POST['enable_room']),
-        $cfg['enable_chatlink'] = $this->toBool($_POST['enable_chatlink']),
-        $cfg['enable_menu'] = $this->toBool($_POST['enable_menu']),
-		$cfg['enable_noti'] = $this->toBool($_POST['enable_noti']), 
-		$cfg['admin_uids'] = $_POST['admin_uids'],
-		$cfg['visitor'] = $this->toBool($_POST['visitor']),
-		$cfg['show_unavailable'] = $this->toBool($_POST['show_unavailable']),
+        $cfg['show_realname'] = $this->toBool($_POST['show_realname']);
+        $cfg['enable_room'] = $this->toBool($_POST['enable_room']);
+        $cfg['enable_chatlink'] = $this->toBool($_POST['enable_chatlink']);
+        $cfg['enable_menu'] = $this->toBool($_POST['enable_menu']);
+		$cfg['enable_noti'] = $this->toBool($_POST['enable_noti']); 
+		$cfg['admin_uids'] = $_POST['admin_uids'];
+		$cfg['visitor'] = $this->toBool($_POST['visitor']);
+		$cfg['show_unavailable'] = $this->toBool($_POST['show_unavailable']);
         $this->writeConfig($cfg);
         $this->success('设置成功');
 	}

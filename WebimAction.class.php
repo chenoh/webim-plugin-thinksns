@@ -51,6 +51,11 @@ class WebimAction {
 
 		global $IMC;
 
+		//插件关闭
+		if(!$IMC['enable']) exit();
+		//用户未登录
+		if(!$this->thinkim->logined()) exit();
+
 		$fields = array(
 			'version',
 			'theme', 

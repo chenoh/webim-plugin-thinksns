@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WebIM插件
  * @author ery.lee at gmail.com
@@ -13,9 +14,7 @@ class WebimAddons extends NormalAddons
     protected $site    = 'http://nextalk.im';
     protected $info    = 'WebIM微博站内即时消息';
     protected $pluginName = 'WebIM';
-    // 安装时需要执行的sql文件名
-    // protected $sqlfile = 'install.sql';    
-    // ts核心版本号
+    //ts核心版本号
     protected $tsVersion  = "3.0";                               
 
     /**
@@ -37,7 +36,7 @@ class WebimAddons extends NormalAddons
     }
 
     public function start() {
-        return true;
+        //return true;
     }
 
     /**
@@ -45,7 +44,7 @@ class WebimAddons extends NormalAddons
      */
     public function install() {     
         $db_prefix = C('DB_PREFIX');
-        $sql = "CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_histories` (
+        $sql = "CREATE TABLE `{$db_prefix}webim_histories` (
                     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                     `send` tinyint(1) DEFAULT NULL,
                     `type` varchar(20) DEFAULT NULL,
@@ -60,23 +59,21 @@ class WebimAddons extends NormalAddons
                     `created_at` date DEFAULT NULL,
                     `updated_at` date DEFAULT NULL,
                     PRIMARY KEY (`id`),
-                    KEY `todel` (`todel`),
-                    KEY `fromdel` (`fromdel`),
                     KEY `timestamp` (`timestamp`),
                     KEY `to` (`to`),
                     KEY `from` (`from`),
                     KEY `send` (`send`)
-                ) ENGINE=MyISAM;
+                ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
                 CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_settings` (
                     `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-                    `uid` int(11) unsigned NOT NULL,
+                    `uid` varchar(40) NOT NULL,
                     `web` blob,
                     `air` blob,
                     `created_at` date DEFAULT NULL,
                     `updated_at` date DEFAULT NULL,
                     PRIMARY KEY (`id`) 
-                ) ENGINE=MyISAM;";
-
+                ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+				
         D()->execute($sql);
         return true;
     }
