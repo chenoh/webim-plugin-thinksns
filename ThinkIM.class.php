@@ -79,15 +79,16 @@ class ThinkIM {
 	 */
 	public function buddies() {
 		global $IMC;
-		$buddies = array();
-		
 		//根据当前用户uid获取双向follow的好友id列表
 		$follows = model('Follow')->getFriendsData($this->uid());
+		if(!$follows) $follows = array();
 		$fids = array_map(function($u) { return $u['fid']; }, $follows);
 		//获取好友信息列表
 		$friends = model('User')->getUserInfoByUids($fids);
+		if(!$friends) $friends = array();
 		//获取管理员信息列表
 		$admins = model('User')->getUserInfoByUids($IMC['admin_uids']);
+		if(!$admins) $admins = array();
 		//转换为Webim Buddy对象.
 		return $this->toBuddies(array_merge($admins, $friends));
 	}
@@ -100,7 +101,9 @@ class ThinkIM {
 	function buddiesByIds($friend_uids = "", $stranger_uids = "") {
 		//根据id列表获取好友列表
 		$friends = model('User')->getUserInfoByUids($friend_uids);
+		if(!$friends) $friends = array();
 		$strangers = model('User')->getUserInfoByUids($stranger_uids);
+		if(!$strangers) $strangers = array();
 		return $array_merge(
 			$this->toBuddies($friends),
 			$this->toBuddies($stranges, 'stranger')	
@@ -166,6 +169,7 @@ class ThinkIM {
 	public function notifications() {
 		$notices = array();
 		$userCount = model('UserCount')->getUnreadCount($this->uid());
+		if(!$userCount) $userCount = array();
 		if ($userCount['unread_notify']) {
 			$notices[] = array(
 				"text" => ('您有<strong>' . $userCount['unread_notify'] . '</strong> 个系统消息'), 
@@ -192,22 +196,24 @@ class ThinkIM {
 	 * 返回菜单列表
 	 */
 	public function menulist() {
-		$apps = array();
-		foreach(model('App')->getUserApp($this->uid()) as $app) {
-			$apps[] = (object)array(
+		$apps = model('App')->getUserApp($this->uid());
+		if(!$apps) $apps = array();
+		$menus = array();
+		foreach($apps as $app) {
+			$menus[] = (object)array(
 				'title' => $app['app_alias'],
 				'icon' => $app['icon_url'],
 				'link' => SITE_URL . "/index.php?app=" . $app['app_name'],
 			);
 		}
-		return $apps;
+		return $menus;
 	}
 
 	/*
 	 * 接口函数: 初始化当前用户对象，与站点用户集成.
 	 */
 	private function setUser() {
-		$uid = $this->getUid();
+		$uid = $this->uid();
 		$user = model('User')->getUserInfo($uid);
 		if ($user['admin_level'] != 0) {
 			$this->is_admin = true;

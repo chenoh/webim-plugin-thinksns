@@ -3,7 +3,7 @@
 return array (
   'version' => '5.1',
   'enable' => true,
-  'debug' => true,
+  'debug' => false,
   'domain' => '',
   'apikey' => '',
   'host' => 'nextalk.im',
@@ -18,11 +18,9 @@ return array (
   'enable_shortcut' => true,
   'enable_menu' => false,
   'enable_login' => false,
-  'enable_noti' => false,
-  'host_from_domain' => false,
+  'enable_noti' => true,
   'admin_uid' => '0',
-  'admin_groupname' => 'admin',
-  'visitor' => true,
+  'visitor' => false,
   'show_unavailable' => false,
   'upload' => false,
 );

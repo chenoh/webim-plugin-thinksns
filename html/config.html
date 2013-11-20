@@ -5,6 +5,15 @@
     <div style="heigh:50px; background-color:#FFC; border: 1px #CCC solid; padding:30px; color:#F00;">注意: webim/config.php须设置为可写<br><br>WebIM插件通过跨域JSONP实现，以保证对ThinkSNS主站没有负载压力。使用前请前往【<a href="http://nextalk.im" target="_blank"><strong>http://nextalk.im</strong></a>】购买独立的消息服务器，或者申请免费在线ApiKey。</div>
     <div class="form2">
         <form method="post" action="{:Addons::adminUrl('saveConfig')}">
+			
+           <dl class="lineD">
+              <dt>开启插件</dt>
+              <dd>
+              <input class="radio" type="radio" name="enable" value="true"  <?php echo $IMC['enable'] ? 'checked=""' : '' ?>>&nbsp;是
+                <input class="radio" type="radio" name="enable" value="false" <?php echo ! $IMC['enable'] ? 'checked=""' : '' ?>>&nbsp;否
+              </dd>
+           </dl>
+
             <dl class="lineD">
                 <dt>注册域名：</dt>
                 <dd>
@@ -59,7 +68,7 @@
             </dl>
 
              <dl class="lineD">
-                <dt>关闭群组聊天</dt>
+                <dt>开启群组聊天</dt>
                 <dd>
                 <input class="radio" type="radio" name="enable_room" value="true"  <?php echo $IMC['enable_room'] ? 'checked=""' : '' ?>>&nbsp;是
                 <input class="radio" type="radio" name="enable_room" value="false" <?php echo ! $IMC['enable_room'] ? 'checked=""' : '' ?>>&nbsp;否
@@ -67,7 +76,7 @@
             </dl>
 
              <dl class="lineD">
-                <dt>关闭陌生人聊天</dt>
+                <dt>开启群陌生人聊天</dt>
                 <dd>
                 <input class="radio" type="radio" name="enable_chatlink" value="true"  <?php echo $IMC['enable_chatlink'] ? 'checked=""' : '' ?>>&nbsp;是
                 <input class="radio" type="radio" name="enable_chatlink" value="false" <?php echo ! $IMC['enable_chatlink'] ? 'checked=""' : '' ?>>&nbsp;否
@@ -83,13 +92,44 @@
             </dl>
 
              <dl class="lineD">
-                <dt>隐藏菜单:</dt>
+                <dt>显示菜单:</dt>
                 <dd>
                 <input class="radio" type="radio" name="enable_menu" value="true"  <?php echo $IMC['enable_menu'] ? 'checked=""' : '' ?>>&nbsp;是
                 <input class="radio" type="radio" name="enable_menu" value="false" <?php echo ! $IMC['enable_menu'] ? 'checked=""' : '' ?>>&nbsp;否
                 </dd>
             </dl>
            
+             <dl class="lineD">
+                <dt>显示通知按钮:</dt>
+                <dd>
+                <input class="radio" type="radio" name="enable_noti" value="true"  <?php echo $IMC['enable_noti'] ? 'checked=""' : '' ?>>&nbsp;是
+                <input class="radio" type="radio" name="enable_noti" value="false" <?php echo ! $IMC['enable_noti'] ? 'checked=""' : '' ?>>&nbsp;否
+                </dd>
+            </dl>
+
+             <dl class="lineD">
+                <dt>默认管理员UID列表</dt>
+                <dd>
+                    <input class="text" type="text" id="admin_uids" value="{$IMC.admin_uids}" name="opacity">
+                </dd>
+            </dl>
+
+             <dl class="lineD">
+                <dt>支持访客聊天:</dt>
+                <dd>
+                <input class="radio" type="radio" name="visitor" value="true"  <?php echo $IMC['visitor'] ? 'checked=""' : '' ?>>&nbsp;是
+                <input class="radio" type="radio" name="visitor" value="false" <?php echo ! $IMC['visitor'] ? 'checked=""' : '' ?>>&nbsp;否
+                </dd>
+            </dl>
+
+             <dl class="lineD">
+                <dt>显示离线好友:</dt>
+                <dd>
+                <input class="radio" type="radio" name="show_unavailable" value="true"  <?php echo $IMC['show_unavailable'] ? 'checked=""' : '' ?>>&nbsp;是
+                <input class="radio" type="radio" name="show_unavailable" value="false" <?php echo ! $IMC['show_unavailable'] ? 'checked=""' : '' ?>>&nbsp;否
+                </dd>
+            </dl>
+
             <div class="page_btm">
                 <input type="submit" class="btn_b" value="确定" />
             </div>
@@ -98,3 +138,5 @@
 </div>
 
 <include file="../Public/_footer" />
+
+

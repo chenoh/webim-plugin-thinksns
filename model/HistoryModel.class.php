@@ -3,6 +3,23 @@
 class HistoryModel extends Model {
 
 	protected $tableName = 'webim_histories';
+	protected $fields = array(
+			0 => 'id',
+			1 => 'send',
+			2 => 'type',
+			3 => '`to`',
+			4 => '`from`',
+			5 => 'nick',
+			6 => 'body',
+			7 => 'style',
+			8 => 'timestamp',
+			9 => 'todel',
+			10 => 'fromdel',
+			11 => 'created_at',
+			12 => 'updated_at',
+			'_autoinc' => true,
+			'_pk' => 'id' 
+	);
 
 	public function get($uid, $with, $type='chat', $limit=30) {
 		if( $type == "chat" ) {
@@ -11,13 +28,16 @@ class HistoryModel extends Model {
 		} else {
 			$where = "`to`='$with' AND `type`='grpchat' AND send = 1";
 		}
-		$rows = $this->where($where)->order('timestamp DESC')->limit(0, $limit)->select();
-		return array_reverse( $rows );
+		$data = $this->where($where)->order('timestamp DESC')->limit($limit)->findAll();
+		if($data) return array_reverse( $rows );
+		return array();
 	}
 
 	public function getOffline($uid, $limit = 50) {
-		$rows = $this->where("`to`='$uid' and send != 1")->order('timestamp DESC ')->limit(0, $limit)->select();
-		return array_reverse( $rows );
+		$where = array("`to`" => "$uid", "send" => 1);
+		$data = $this->where($where)->limit($limit)->field('*')->order('timestamp DESC ')->findAll();
+		if($data) return array_reverse( $rows );
+		return array();
 	}
 
 	public function insert($user, $message) {
@@ -35,8 +55,10 @@ class HistoryModel extends Model {
 	}
 
 	public function offlineReaded($uid) {
-		$this->where("to='$uid' and send=0")->save(array("send" => 1));
+		$this->where("`to`='$uid' and send=0")->save( array('send' => 1) );
 	}
 
 }
+
+
 

@@ -9,12 +9,12 @@ class WebimAddons extends NormalAddons
 {
     protected $version = '5.1';
     protected $author  = '杭州巨鼎信息技术有限公司';
-    protected $thanks  = 'isjava';
+    protected $thanks  = 'Ery Lee';
     protected $site    = 'http://nextalk.im';
-    protected $info    = 'WebIM微博站内即时消息插件';
+    protected $info    = 'WebIM微博站内即时消息';
     protected $pluginName = 'WebIM';
     // 安装时需要执行的sql文件名
-    protected $sqlfile = 'install.sql';    
+    // protected $sqlfile = 'install.sql';    
     // ts核心版本号
     protected $tsVersion  = "3.0";                               
 

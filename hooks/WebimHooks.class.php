@@ -13,37 +13,44 @@ class WebimHooks extends Hooks
     }
 
 	public function config(){
+		echo "fuckk....";
 		$imc = require_once SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+		var_dump($imc);
 		$this->assign('IMC', $imc);
-		$this->display('config');
+		//$this->display('config');
 	}
 
 	public function saveConfig() {
-        require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+        $cfg = require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
         if(!$_POST['domain']) {
 			$this->error('注册域名不能为空');
             return;
         }
-        $_IMC['domain'] = $_POST['domain'];
+        $cfg['domain'] = $_POST['domain'];
         if(!$_POST['apikey']) {
 			$this->error('ApiKey不能为空');
             return;
         }
-        $_IMC['apikey'] = $_POST['apikey'];
+        $cfg['apikey'] = $_POST['apikey'];
         if(!$_POST['host'] || !$_POST['port']) {
 			$this->error('IM服务器和端口不能为空');
             return;
         }
-        $_IMC['host'] = $_POST['host'];
-        $_IMC['port'] = $_POST['port'];
-        $_IMC['local'] = $_POST['local'];
-        $_IMC['emot'] = $_POST['emot'];
-        $_IMC['opacity'] = $_POST['opacity'];
-        $_IMC['show_realname'] = $_POST['show_realname'] == 'true' ? true : false; 
-        $_IMC['enable_room'] = $_POST['enable_room'] == 'true' ? true : false;	
-        $_IMC['enable_chatlink'] = $_POST['enable_chatlink'] == 'true' ? true : false;	
-        $_IMC['enable_menu'] = $_POST['enable_menu'] == 'true' ? true : false;
-        $this->writeConfig($_IMC);
+		$cfg['enable'] = $this->toBool($_POST['enable']),
+        $cfg['host'] = $_POST['host'];
+        $cfg['port'] = $_POST['port'];
+        $cfg['local'] = $_POST['local'];
+        $cfg['emot'] = $_POST['emot'];
+        $cfg['opacity'] = $_POST['opacity'];
+        $cfg['show_realname'] = $this->toBool($_POST['show_realname']),
+        $cfg['enable_room'] = $this->toBool($_POST['enable_room']),
+        $cfg['enable_chatlink'] = $this->toBool($_POST['enable_chatlink']),
+        $cfg['enable_menu'] = $this->toBool($_POST['enable_menu']),
+		$cfg['enable_noti'] = $this->toBool($_POST['enable_noti']), 
+		$cfg['admin_uids'] = $_POST['admin_uids'],
+		$cfg['visitor'] = $this->toBool($_POST['visitor']),
+		$cfg['show_unavailable'] = $this->toBool($_POST['show_unavailable']),
+        $this->writeConfig($cfg);
         $this->success('设置成功');
 	}
 
@@ -65,7 +72,7 @@ class WebimHooks extends Hooks
     }
 
 	public function skin() {
-		require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+		$cfg = require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
         $path = SITE_PATH. '/addons/plugin/Webim/static/themes';
 		$theme_url = SITE_URL. '/addons/plugin/Webim/static/themes';
 
@@ -74,7 +81,7 @@ class WebimHooks extends Hooks
         foreach ($files as $k => $v){
             $t_path = $path.'/'.$v;
             if(is_dir($t_path) && is_file($t_path."/jquery.ui.theme.css")) {
-                $cur = $v == $_IMC['theme'] ? " class='current'" : "";
+                $cur = $v == $cfg['theme'] ? " class='current'" : "";
 				$themes[] = "<li$cur><a href=\"javascript:;\" onclick=\"fChange('{$v}',$(this));\"><img width=100 height=134 src='$theme_url/images/$v.png' alt='$v' title='$v'/></a></li>";
             }
         }
@@ -84,9 +91,9 @@ class WebimHooks extends Hooks
 
 	public function saveSkin() {
 		if($_POST) {
-			require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
-			$_IMC['theme'] = $_POST['theme'];
-			$this->writeConfig($_IMC);
+			$cfg = require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+			$cfg['theme'] = $_POST['theme'];
+			$this->writeConfig($cfg);
 		    $this->success('设置成功, 主题设置为: ' . $_POST['theme']);
 		}
 	}
@@ -108,11 +115,17 @@ class WebimHooks extends Hooks
 				$ago = 0;
 			}
 			$ago = ( time() - $ago ) * 1000;
-		
 			$db_prefix = C('DB_PREFIX');
 			$sql = "DELETE FROM `{$db_prefix}webim_histories` WHERE `timestamp` < {$ago}";
-		    D()->execute($sql);
+		    $res = D()->execute($sql);
+			//FIXME:
+			//var_dump($res);
 		    $this->success('清除成功: ' . $sql);
 	    }
 	}
+
+	private function toBool($s) {
+		return $s == 'true' ? true : false;
+	}
+
 }

@@ -6,7 +6,7 @@ return array (
   'debug' => true,
   'domain' => 'localhost',
   'apikey' => 'public',
-  'host' => 'nextalk.im',
+  'host' => 'localhost',
   'port' => '8000',
   'emot' => 'default',
   'theme' => 'base',
@@ -19,10 +19,9 @@ return array (
   'enable_menu' => false,
   'enable_login' => false,
   'enable_noti' => true,
-  'host_from_domain' => false,
   'admin_uids' => '0',
-  'admin_groupname' => 'admin',
-  'visitor' => true,
+  'visitor' => false,
   'show_unavailable' => false,
   'upload' => false,
 );
+

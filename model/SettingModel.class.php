@@ -4,6 +4,15 @@ class SettingModel extends Model {
 
 	protected $tableName = 'webim_settings';
 
+	protected $fields = array(
+			0 => 'id',
+			1 => 'uid',
+			2 => 'web',
+			3 => 'air',
+			4 => 'created_at',
+			5 => 'updated_at',
+	);
+
 	public function set($uid, $data, $type='web') {
 		$setting = $this->where("uid='$uid'")->find();
 		if( $setting ) {
