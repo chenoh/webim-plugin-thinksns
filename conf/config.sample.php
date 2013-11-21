@@ -6,7 +6,7 @@ return array (
   'debug' => false,
   'domain' => '',
   'apikey' => '',
-  'host' => 'nextalk.im',
+  'host' => 'localhost',
   'port' => '8000',
   'emot' => 'default',
   'theme' => 'base',

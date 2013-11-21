@@ -115,9 +115,7 @@ class WebimHooks extends Hooks
 			$ago = ( time() - $ago ) * 1000;
 			$db_prefix = C('DB_PREFIX');
 			$sql = "DELETE FROM `{$db_prefix}webim_histories` WHERE `timestamp` < {$ago}";
-		    $res = D()->execute($sql);
-			//FIXME:
-			//var_dump($res);
+		    D()->execute($sql);
 		    $this->success('清除成功: ' . $sql);
 	    }
 	}

@@ -16,11 +16,13 @@ if(WEBIM_DEBUG) {
 	error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
 }
 
+//NOTICE: Have to redefine SITE_URL.
+define('__ROOT__', chop($_SERVER['PHP_SELF'], '/addons/plugin/Webim/index.php'));
 defined('SITE_PATH') or define('SITE_PATH', dirname(dirname(dirname(dirname(__FILE__)))));
 
 require_once(SITE_PATH . '/core/core.php');
 
-define('WEBIM_URL', SITE_URL . '/');
+define('WEBIM_URL', SITE_URL . '/addons/plugin/Webim');
 
 $IMC = require_once('conf/config.php');
 

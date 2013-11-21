@@ -168,26 +168,34 @@ class ThinkIM {
 	 */	
 	public function notifications() {
 		$notices = array();
-		$userCount = model('UserCount')->getUnreadCount($this->uid());
+		$uid = $this->uid();
+		$userCount = model('UserCount')->getUnreadCount($uid);
 		if(!$userCount) $userCount = array();
 		if ($userCount['unread_notify']) {
 			$notices[] = array(
 				"text" => ('您有<strong>' . $userCount['unread_notify'] . '</strong> 个系统消息'), 
-				"link" => SITE_URL . "/index.php?app=home&mod=message&act=notify");
+				"link" => SITE_URL . "/index.php?app=public&mod=Message&act=notify");
 		}
 		if ($userCount['unread_message']) {
 			$notices[] = array(
 				"text" => ('您有<strong>' . $userCount["unread_message"] . '</strong> 个站内短消息'), 
-				"link" => SITE_URL . "/index.php?app=home&mod=message&act=index");
+				"link" => SITE_URL . "/index.php?app=public&mod=Message&act=index");
 		}
 		if ($userCount['unread_atme']) {
 			$notices[] = array(
 				"text" => ('您有<strong>' . $userCount["unread_atme"] . '</strong> 个好友@了你'),
-				"link" => SITE_URL . "/index.php?app=home&mod=user&act=atme");
+				"link" => SITE_URL . "/index.php?app=public&mod=Mention&act=index");
 		}
 		if ($userCount['unread_comment']) {
-			$notices[] = array("text" => ('您有<strong>' . $userCount["unread_comment"] . '</strong> 评论'), 
-			"link" => SITE_URL . "/index.php?app=home&mod=user&act=comments");
+			$notices[] = array(
+				"text" => ('您有<strong>' . $userCount["unread_comment"] . '</strong> 评论'), 
+				"link" => SITE_URL . "/index.php?app=public&mod=Comment&act=index&type=receive");
+		}
+		if($userCount['new_folower_count']) {
+			$notices[] = array(
+				"text" => ('您有<strong>' . $userCount['new_folower_count'] . '</strong>位新粉丝'),
+				"link" => SITE_URL . "/index.php?app=public&mod=Index&act=follower&uid=" . $uid);	
+
 		}
 		return $notices;
 	}
@@ -245,7 +253,7 @@ class ThinkIM {
 			'uid' => $id,
 			'id' => $id,
 			'nick' => "v".$id,
-			'pic_url' => WEBIM_URL . "static/images/chat.png",
+			'pic_url' => WEBIM_URL . "/static/images/chat.png",
 			'show' => "available",
 			'url' => "#",
 			'status' => '网站访客',

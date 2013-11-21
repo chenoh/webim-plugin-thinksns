@@ -7,8 +7,8 @@ class HistoryModel extends Model {
 			0 => 'id',
 			1 => 'send',
 			2 => 'type',
-			3 => '`to`',
-			4 => '`from`',
+			3 => 'to',
+			4 => 'from',
 			5 => 'nick',
 			6 => 'body',
 			7 => 'style',
@@ -23,20 +23,20 @@ class HistoryModel extends Model {
 
 	public function get($uid, $with, $type='chat', $limit=30) {
 		if( $type == "chat" ) {
-			$where = "`type` = 'chat' AND ((`to`='$with' AND `from`='$uid' AND `fromdel` != 1) 
-					 OR (`send` = 1 AND `from`='$with' AND `to`='$uid' AND `todel` != 1))";
+			$where = "`type` = 'chat' AND ((`to`='$with' AND `from`='$uid' AND fromdel != 1) 
+					 OR (send = 1 AND `from`='$with' AND `to`='$uid' AND todel != 1))";
 		} else {
 			$where = "`to`='$with' AND `type`='grpchat' AND send = 1";
 		}
 		$data = $this->where($where)->order('timestamp DESC')->limit($limit)->findAll();
-		if($data) return array_reverse( $rows );
+		if($data) return array_reverse( $data );
 		return array();
 	}
 
 	public function getOffline($uid, $limit = 50) {
-		$where = array("`to`" => "$uid", "send" => 1);
-		$data = $this->where($where)->limit($limit)->field('*')->order('timestamp DESC ')->findAll();
-		if($data) return array_reverse( $rows );
+		$where = array("to" => "$uid", "send" => 0);
+		$data = $this->where($where)->limit($limit)->order('timestamp DESC ')->findAll();
+		if($data) return array_reverse( $data );
 		return array();
 	}
 
@@ -49,13 +49,13 @@ class HistoryModel extends Model {
 	}
 
 	public function clear($uid, $with) {
-		$this->where("from='$uid' and to='$with'")->save( array( "fromdel" => 1, "type" => "chat" ) );
-		$this->where("to='$uid' and from='$with'")->save( array( "todel" => 1, "type" => "chat" ) );
-		$this->where("todel=1 AND fromdel=1")->delete();
+		$this->where( array('from' => "$uid", 'to' => "$with") )->save( array( "fromdel" => 1, "type" => "chat" ) );
+		$this->where( array('to' => "$uid", 'from' => "$with") )->save( array( "todel" => 1, "type" => "chat" ) );
+		$this->where( array('todel' => 1, 'fromdel' => 1) )->delete();
 	}
 
 	public function offlineReaded($uid) {
-		$this->where("`to`='$uid' and send=0")->save( array('send' => 1) );
+		$this->where( array('to' => '$uid', 'send' => 0) )->save( array('send' => 1) );
 	}
 
 }

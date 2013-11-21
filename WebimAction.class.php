@@ -90,8 +90,8 @@ class WebimAction {
 		echo "var _IMC = " . json_encode($scriptVar) . ";" . PHP_EOL;
 
 		$script = <<<EOF
-_IMC.script = window.webim ? '' : ('<link href="' + _IMC.path + 'static/webim.' + _IMC.production_name + _IMC.min + '.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><link href="' + _IMC.path + 'static/themes/' + _IMC.theme + '/jquery.ui.theme.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><script src="' + _IMC.path + 'static/webim.' + _IMC.production_name + _IMC.min + '.js?' + _IMC.version + '" type="text/javascript"></script><script src="' + _IMC.path + 'static/i18n/webim-' + _IMC.local + '.js?' + _IMC.version + '" type="text/javascript"></script>');
-_IMC.script += '<script src="' + _IMC.path + 'webim.js?' + _IMC.version + '" type="text/javascript"></script>';
+_IMC.script = window.webim ? '' : ('<link href="' + _IMC.path + '/static/webim.' + _IMC.production_name + _IMC.min + '.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><link href="' + _IMC.path + '/static/themes/' + _IMC.theme + '/jquery.ui.theme.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><script src="' + _IMC.path + '/static/webim.' + _IMC.production_name + _IMC.min + '.js?' + _IMC.version + '" type="text/javascript"></script><script src="' + _IMC.path + '/static/i18n/webim-' + _IMC.local + '.js?' + _IMC.version + '" type="text/javascript"></script>');
+_IMC.script += '<script src="' + _IMC.path + '/webim.js?' + _IMC.version + '" type="text/javascript"></script>';
 document.write( _IMC.script );
 
 EOF;
@@ -99,6 +99,7 @@ EOF;
 	}
 
 	public function online() {
+		$uid = $this->thinkim->uid();
 		$domain = $this->input("domain");
 		if ( !$this->thinkim->logined() ) {
 			$this->jsonReturn(array( 
@@ -117,11 +118,12 @@ EOF;
 		$new_messages = $this->historyModel->getOffline($this->thinkim->uid());
 		$online_buddies = $this->thinkim->buddies();
 		
-		$buddies_with_info = array();//Buddy with info.
+		$buddies_with_info = array();
 		//Active buddy who send a new message.
-		$count = count($new_messages);
-		for($i = 0; $i < $count; $i++){
-			$active_buddies[] = $new_messages[$i]->from;
+		foreach($new_messages as $msg) {
+			if(!in_array($msg['from'], $active_buddies)) {
+				$active_buddies[] = $msg['from'];
+			}
 		}
 
 		//Find im_buddies
@@ -235,12 +237,12 @@ EOF;
 			//Provide history for active buddies and rooms
 			foreach($active_buddies as $id){
 				if(isset($cache_buddies[$id])){
-					$cache_buddies[$id]->history = $this->historyModel->get($id, "chat" );
+					$cache_buddies[$id]->history = $this->historyModel->get($uid, $id, "chat" );
 				}
 			}
 			foreach($active_rooms as $id){
 				if(isset($cache_rooms[$id])){
-					$cache_rooms[$id]->history = $this->historyModel->get($id, "grpchat" );
+					$cache_rooms[$id]->history = $this->historyModel->get($uid, $id, "grpchat" );
 				}
 			}
 
@@ -373,17 +375,35 @@ EOF;
 	}
 
 	public function download_history() {
+		$uid = $this->thinkim->uid();
 		$id = $this->input('id');
 		$type = $this->input('type');
-		$histories = $this->historyModel->get($id, $type, 1000 );
+		$histories = $this->historyModel->get($uid, $id, $type, 1000 );
 		$date = date( 'Y-m-d' );
 		if($this->input('date')) {
 			$date = $this->input('date');
 		}
+		//FIXME Later
+		//$client_time = (int)$this->input('time');
+		//$server_time = webim_microtime_float() * 1000;
+		//$timedelta = $client_time - $server_time;
+		header('Content-Type',	'text/html; charset=utf-8');
 		header('Content-Disposition: attachment; filename="histories-'.$date.'.html"');
-		$this->assign('date', $date);
-		$this->assign('histories', $histories);
-		$this->display();
+		echo "<html><head>";
+		echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+		echo "</head><body>";
+		echo "<h1>Histories($date)</h1>".PHP_EOL;
+		echo "<table><thead><tr><td>用户</td><td>消息</td><td>时间</td></tr></thead><tbody>";
+		foreach($histories as $history) {
+			$nick = $history['nick'];
+			$body = $history['body'];
+			$style = $history['style'];
+			$time = date( 'm-d H:i', (float)$history['timestamp']/1000 ); 
+			echo "<tr><td>{$nick}</td><td style=\"{$style}\">{$body}</td><td>{$time}</td></tr>";
+		}
+		echo "</tbody></table>";
+		echo "</body></html>";
+		exit();
 	}
 
 	public function setting() {
