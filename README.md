@@ -29,7 +29,7 @@ ThinkIM.class.php: 与ThinkSNS集成类，读取ThinkSNS的用户关系、群组
 作者
 ====
 
-Ery Lee <ery.lee at gmail.com>
+Ery Lee (ery.lee at gmail.com)
 
 http://nextalk.im
 
