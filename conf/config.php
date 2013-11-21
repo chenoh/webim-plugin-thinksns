@@ -1,6 +1,4 @@
-<?php 
-
-return array (
+<?php return array (
   'version' => '5.1',
   'enable' => true,
   'debug' => true,
@@ -9,7 +7,7 @@ return array (
   'host' => 'localhost',
   'port' => '8000',
   'emot' => 'default',
-  'theme' => 'base',
+  'theme' => 'black-tie',
   'opacity' => '80',
   'local' => 'zh-CN',
   'show_realname' => false,
@@ -24,4 +22,3 @@ return array (
   'show_unavailable' => false,
   'upload' => false,
 );
-
