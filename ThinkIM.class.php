@@ -250,8 +250,8 @@ class ThinkIM {
 			setcookie('_webim_visitor_id', $id, time() + 3600 * 24 * 30, "/", "");
 		}
 		$this->user = (object)array(
-			'uid' => $id,
-			'id' => $id,
+			'uid' => 'vid:'.$id,
+			'id' => 'vid:'.$id,
 			'nick' => "v".$id,
 			'pic_url' => WEBIM_URL . "/static/images/chat.png",
 			'show' => "available",
