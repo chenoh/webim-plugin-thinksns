@@ -17,7 +17,7 @@
   'enable_menu' => false,
   'enable_login' => false,
   'enable_noti' => true,
-  'admin_uids' => '1',
+  'admin_uids' => '0',
   'visitor' => false,
   'show_unavailable' => true,
   'upload' => false,
