@@ -1,6 +1,6 @@
 <?php return array (
   'version' => '5.1',
-  'enable' => true,
+  'isopen' => true,
   'debug' => true,
   'domain' => 'localhost',
   'apikey' => 'public',
@@ -19,6 +19,6 @@
   'enable_noti' => true,
   'admin_uids' => '0',
   'visitor' => false,
-  'show_unavailable' => true,
+  'show_unavailable' => false,
   'upload' => false,
 );

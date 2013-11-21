@@ -34,7 +34,7 @@ class WebimHooks extends Hooks
 			$this->error('IM服务器和端口不能为空');
             return;
         }
-		$cfg['enable'] = $this->toBool($_POST['enable']);
+		$cfg['isopen'] = $this->toBool($_POST['isopen']);
         $cfg['host'] = $_POST['host'];
         $cfg['port'] = $_POST['port'];
         $cfg['local'] = $_POST['local'];

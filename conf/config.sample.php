@@ -2,7 +2,7 @@
 
 return array (
   'version' => '5.1',
-  'enable' => true,
+  'isopen' => true,
   'debug' => false,
   'domain' => '',
   'apikey' => '',

@@ -106,7 +106,7 @@ class ThinkIM {
 		if(!$strangers) $strangers = array();
 		return array_merge(
 			$this->toBuddies($friends),
-			$this->toBuddies($stranges, 'stranger')	
+			$this->toBuddies($strangers, 'stranger')	
 		);
 	}
 
