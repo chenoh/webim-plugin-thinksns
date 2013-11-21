@@ -198,15 +198,15 @@ class ThinkIM {
 	public function menulist() {
 		$apps = model('App')->getUserApp($this->uid());
 		if(!$apps) $apps = array();
-		$menus = array();
+		$menu = array();
 		foreach($apps as $app) {
-			$menus[] = (object)array(
+			$menu[] = (object)array(
 				'title' => $app['app_alias'],
 				'icon' => $app['icon_url'],
 				'link' => SITE_URL . "/index.php?app=" . $app['app_name'],
 			);
 		}
-		return $menus;
+		return $menu;
 	}
 
 	/*
