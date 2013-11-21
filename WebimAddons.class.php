@@ -72,7 +72,6 @@ class WebimAddons extends NormalAddons
                     `updated_at` date DEFAULT NULL,
                     PRIMARY KEY (`id`) 
                 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
-
         D()->execute($sql);
         return true;
     }
