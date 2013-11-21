@@ -14,7 +14,6 @@ class WebimAddons extends NormalAddons
     protected $site    = 'http://nextalk.im';
     protected $info    = 'WebIM微博站内即时消息';
     protected $pluginName = 'WebIM';
-    //ts核心版本号
     protected $tsVersion  = "3.0";                               
 
     /**
@@ -73,7 +72,6 @@ class WebimAddons extends NormalAddons
                     `updated_at` date DEFAULT NULL,
                     PRIMARY KEY (`id`) 
                 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
-				
         D()->execute($sql);
         return true;
     }
