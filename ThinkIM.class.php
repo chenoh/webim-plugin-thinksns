@@ -104,7 +104,7 @@ class ThinkIM {
 		if(!$friends) $friends = array();
 		$strangers = model('User')->getUserInfoByUids($stranger_uids);
 		if(!$strangers) $strangers = array();
-		return $array_merge(
+		return array_merge(
 			$this->toBuddies($friends),
 			$this->toBuddies($stranges, 'stranger')	
 		);
