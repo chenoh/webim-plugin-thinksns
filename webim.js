@@ -50,5 +50,3 @@
 	ui.render();
 	_IMC['is_login'] && im.autoOnline() && im.online();
 })(webim);
-
-

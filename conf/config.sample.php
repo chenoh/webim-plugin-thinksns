@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 return array (
   'version' => '5.1',
   'isopen' => true,
