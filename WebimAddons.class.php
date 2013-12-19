@@ -43,7 +43,7 @@ class WebimAddons extends NormalAddons
      */
     public function install() {     
         $db_prefix = C('DB_PREFIX');
-        $sql = "CREATE TABLE `{$db_prefix}webim_histories` (
+        $sql = "CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_histories` (
                     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                     `send` tinyint(1) DEFAULT NULL,
                     `type` varchar(20) DEFAULT NULL,
@@ -62,8 +62,9 @@ class WebimAddons extends NormalAddons
                     KEY `to` (`to`),
                     KEY `from` (`from`),
                     KEY `send` (`send`)
-                ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-                CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_settings` (
+                ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+        D()->execute($sql);
+        $sql = "CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_settings` (
                     `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
                     `uid` varchar(40) NOT NULL,
                     `web` blob,
@@ -78,8 +79,9 @@ class WebimAddons extends NormalAddons
 
     public function uninstall() {
         $db_prefix = C('DB_PREFIX');
-        $sql = "DROP TABLE IF EXISTS `{$db_prefix}webim_histories`;
-                DROP TABLE IF EXISTS `{$db_prefix}webim_settings;`;";
+        $sql = "DROP TABLE IF EXISTS `{$db_prefix}webim_histories`;";
+        D()->execute($sql);
+        $sql = "DROP TABLE IF EXISTS `{$db_prefix}webim_settings`;";
         D()->execute($sql);
         return true;
     }
