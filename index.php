@@ -28,7 +28,6 @@ $IMC = require_once('conf/config.php');
 
 tsload('lib/HttpClient.class.php');
 tsload('lib/WebimClient.class.php');
-tsload('lib/WebimDB.class.php');
 
 tsload('model/SettingModel.class.php');
 tsload('model/HistoryModel.class.php');
