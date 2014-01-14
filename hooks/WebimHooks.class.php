@@ -9,12 +9,15 @@ class WebimHooks extends Hooks
     }
 
     public function public_footer($param) {
-        echo '<script src="'. SITE_URL .'/addons/plugin/Webim/index.php?action=run"></script> ';
+        echo '<script src="'. SITE_URL .'/addons/plugin/Webim/index.php?action=boot"></script> ';
     }
 
-	public function config(){
-		$imc = require_once SITE_PATH . '/addons/plugin/Webim/conf/config.php';
-		$this->assign('IMC', $imc);
+	public function config() {
+		$cfg = model('Xdata')->get('hook_webim_plugin:config');
+		if(!$cfg or count($cfg) == 0) {
+			$cfg = require_once SITE_PATH . '/addons/plugin/Webim/conf/config.php';
+		}
+		$this->assign('IMC', $cfg);
 		$this->display('config');
 	}
 
@@ -48,7 +51,8 @@ class WebimHooks extends Hooks
 		$cfg['admin_uids'] = $_POST['admin_uids'];
 		$cfg['visitor'] = $this->toBool($_POST['visitor']);
 		$cfg['show_unavailable'] = $this->toBool($_POST['show_unavailable']);
-        $this->writeConfig($cfg);
+		model('Xdata')->saveKey('hook_webim_plugin:config', $cfg);
+        //$this->writeConfig($cfg);
         $this->success('设置成功');
 	}
 

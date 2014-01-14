@@ -24,7 +24,11 @@ require_once(SITE_PATH . '/core/core.php');
 
 define('WEBIM_URL', SITE_URL . '/addons/plugin/Webim');
 
-$IMC = require_once('conf/config.php');
+$IMC = model('Xdata')->get('hook_webim_plugin:config');
+
+if(!$IMC or count($IMC) == 0) {
+	$IMC = require_once('conf/config.php');
+}
 
 tsload('lib/HttpClient.class.php');
 tsload('lib/WebimClient.class.php');

@@ -47,7 +47,7 @@ class WebimAction {
 		$this->historyModel = new HistoryModel();
 	}
 
-	public function run() {
+	public function boot() {
 
 		global $IMC;
 
@@ -90,8 +90,8 @@ class WebimAction {
 		echo "var _IMC = " . json_encode($scriptVar) . ";" . PHP_EOL;
 
 		$script = <<<EOF
-_IMC.script = window.webim ? '' : ('<link href="' + _IMC.path + '/static/webim.' + _IMC.production_name + _IMC.min + '.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><link href="' + _IMC.path + '/static/themes/' + _IMC.theme + '/jquery.ui.theme.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><script src="' + _IMC.path + '/static/webim.' + _IMC.production_name + _IMC.min + '.js?' + _IMC.version + '" type="text/javascript"></script><script src="' + _IMC.path + '/static/i18n/webim-' + _IMC.local + '.js?' + _IMC.version + '" type="text/javascript"></script>');
-_IMC.script += '<script src="' + _IMC.path + '/webim.js?' + _IMC.version + '" type="text/javascript"></script>';
+_IMC.script = window.webim ? '' : ('<link href="' + _IMC.path + '/static/webim' + _IMC.min + '.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><link href="' + _IMC.path + '/static/themes/' + _IMC.theme + '/jquery.ui.theme.css?' + _IMC.version + '" media="all" type="text/css" rel="stylesheet"/><script src="' + _IMC.path + '/static/webim' + _IMC.min + '.js?' + _IMC.version + '" type="text/javascript"></script><script src="' + _IMC.path + '/static/i18n/webim-' + _IMC.local + '.js?' + _IMC.version + '" type="text/javascript"></script>');
+_IMC.script += '<script src="' + _IMC.path + '/webim.' + _IMC.production_name + .js?vsn=' + _IMC.version + '" type="text/javascript"></script>';
 document.write( _IMC.script );
 
 EOF;
@@ -187,26 +187,24 @@ EOF;
 		}
 
 		//===============Online===============
-		//
-
 		$data = $this->client->online( implode(",", array_unique( $im_buddies ) ), implode(",", array_unique( $im_rooms ) ) );
 
 		if( $data->success ){
 			$data->new_messages = $new_messages;
 
 			if(!$IMC['enable_room']){
+                //5.2 fix 20140112
 				//Add room online member count.
-				foreach ($data->rooms as $k => $v) {
-					$id = $v->id;
-					$cache_rooms[$id]->count = $v->count;
+				foreach ($data->rooms as $id => $count) {
+					$cache_rooms[$id]->count = $count;
 				}
 				//Show all rooms.
 			}
 			$data->rooms = $rooms;
 
 			$show_buddies = array();//For output.
-			foreach($data->buddies as $k => $v){
-				$id = $v->id;
+            //5.2 fix 20140112
+			foreach($data->buddies as $id => $show){
 				if(!isset($cache_buddies[$id])){
 					$cache_buddies[$id] = (object)array(
 						"id" => $id,
@@ -215,12 +213,13 @@ EOF;
 					);
 				}
 				$b = $cache_buddies[$id];
-				$b->presence = $v->presence;
-				$b->show = $v->show;
-				if( !empty($v->nick) )
-					$b->nick = $v->nick;
-				if( !empty($v->status) )
-					$b->status = $v->status;
+				$b->presence = "online";
+				$b->show = $show;
+                //5.2 fix 20140112
+				//if( !empty($v->nick) )
+				//	$b->nick = $v->nick;
+				//if( !empty($v->status) )
+				//	$b->status = $v->status;
 				#show online buddy
 				$show_buddies[] = $id;
 			}
@@ -335,7 +334,7 @@ EOF;
 		if($room){
 			$re = $this->client->join($id);
 			if($re){
-				$room->count = $re->count;
+				$room->count = $re->{$id};
 				$this->jsonReturn($room);
 			}else{
 				header("HTTP/1.0 404 Not Found");

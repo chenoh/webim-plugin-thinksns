@@ -5,8 +5,8 @@
  * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Wed Sep 18 21:10:11 2013 +0800
- * Commit: 0b37f2df9f6ca19abbb5f40df0b502a07fc0c4ce
+ * Date: Fri Jan 10 21:26:30 2014 +0800
+ * Commit: 6c4d6a83334b2bfde22e16fe87424f2f0749b6c8
  */
 (function(window, document, undefined){
 
@@ -1271,6 +1271,7 @@ function webim( element, options ) {
 
 ClassEvent.on( webim );
 
+webim.csrf_token = "";
 webim.OFFLINE = 0;
 webim.BEFOREONLINE = 1;
 webim.ONLINE = 2;
@@ -1286,6 +1287,9 @@ extend(webim.prototype, {
 				show: 'unavailable'
 			}
 		};
+
+		ajax.settings.dataType = options.jsonp ? "jsonp" : "json";
+
 		self.status = new webim.status();
 		self.setting = new webim.setting();
 		self.buddy = new webim.buddy();
@@ -1345,7 +1349,13 @@ extend(webim.prototype, {
 		self.trigger("online",[data]);
 		self._createConnect();
 		//handle new messages at last
-		var n_msg = data.new_messages;
+		var n_msg = [];
+		if( data.new_messages ) {
+			n_msg = n_msg.concat( data.new_messages );
+		}
+		if( data.offline_messages ) {
+			n_msg = n_msg.concat( data.offline_messages );
+		}
 		if(n_msg && n_msg.length){
 			each(n_msg, function(n, v){
 				v["new"] = true;
@@ -1456,11 +1466,10 @@ extend(webim.prototype, {
 		msg.ticket = self.data.connection.ticket;
 		self.trigger( "sendMessage", [ msg ] );
 		ajax({
-			type:"get",
-			dataType: "jsonp",
+			type:"post",
 			cache: false,
 			url: route( "message" ),
-			data: msg,
+			data: extend({csrf_token: webim.csrf_token}, msg),
 			success: callback,
 			error: callback
 		});
@@ -1470,11 +1479,10 @@ extend(webim.prototype, {
 		msg.ticket = self.data.connection.ticket;
 		self.trigger( "sendStatus", [ msg ] );
 		ajax({
-			type:"get",
-			dataType: "jsonp",
+			type:"post",
 			cache: false,
 			url: route( "status" ),			
-			data: msg,
+			data: extend({csrf_token: webim.csrf_token}, msg),
 			success: callback,
 			error: callback
 		});
@@ -1487,11 +1495,10 @@ extend(webim.prototype, {
 		self.status.set( "s", msg.show );
 		self.trigger( "sendPresence", [ msg ] );
 		ajax( {
-			type:"get",
-			dataType: "jsonp",
+			type:"post",
 			cache: false,
 			url: route( "presence" ),			
-			data: msg,
+			data: extend({csrf_token: webim.csrf_token}, msg),
 			success: callback,
 			error: callback
 		} );
@@ -1517,6 +1524,7 @@ extend(webim.prototype, {
 			//stranger_ids: self.stranger_ids.join(","),
 			buddy_ids: buddy_ids.join(","),
 			room_ids: room_ids.join(","),
+			csrf_token: webim.csrf_token,
 			show: status.get("s") || "available"
 		}, params);
 		self._ready(params);
@@ -1525,8 +1533,7 @@ extend(webim.prototype, {
 		status.set("s", params.show);
 
 		ajax({
-			type:"get",
-			dataType: "jsonp",
+			type:"post",
 			cache: false,
 			url: route( "online" ),
 			data: params,
@@ -1555,12 +1562,12 @@ extend(webim.prototype, {
 		self.connection.close();
 		self._stop("offline", "offline");
 		ajax({
-			type:"get",
-			dataType: "jsonp",
+			type:"post",
 			cache: false,
 			url: route( "offline" ),
 			data: {
 				status: 'offline',
+				csrf_token: webim.csrf_token,
 				ticket: data.connection.ticket
 			}
 		});
@@ -1571,11 +1578,11 @@ extend(webim.prototype, {
 		if( !data || !data.connection || !data.connection.ticket ) return;
 		ajax( {
 			type:"get",
-			dataType: "jsonp",
 			cache: false,
 			url: route( "deactivate" ),
 			data: {
-				ticket: data.connection.ticket
+				ticket: data.connection.ticket,
+				csrf_token: webim.csrf_token
 			}
 		} );
 	}
@@ -1679,24 +1686,24 @@ model("setting",{
 			var _new = extend( {}, _old, options );
 			self.data = _new;
 			ajax( {
-				type: 'get',
+				type: 'post',
 				url: route( "setting" ),
-				dataType: 'jsonp',
 				cache: false,
 				data: {
-					data: JSON.stringify( _new )
+					data: JSON.stringify( _new ),
+					csrf_token: webim.csrf_token
 				}
 			} );
 		}
 	}
 } );
 /*
-* 状态(cookie临时存储[刷新页面有效])
-* 
-* get(key);//get
-* set(key,value);//set
-* clear()
-*/
+ * 状态(cookie临时存储[刷新页面有效])
+ * 
+ * get(key);//get
+ * set(key,value);//set
+ * clear()
+ */
 //var d = {
 //        tabs:{1:{n:5}}, // n -> notice count
 //        tabIds:[1],
@@ -1711,8 +1718,22 @@ model( "status", {
 }, {
 	_init:function() {
 		var self = this, data = self.data, key = self.options.key;
+		var store = window.localStorage;
+		if( store ) {
+			//无痕浏览模式
+			try {
+				var testKey = '__store_webim__'
+				store.setItem(testKey, testKey)
+				if (store.getItem(testKey) == testKey) { 
+					self.store = store;
+				}
+				store.removeItem(testKey);
+			} catch(e) {
+				self.store = undefined;
+			}
+		}
 		if ( !data ) {
-			var c = window.localStorage ? window.localStorage.getItem( key ) : cookie( key );
+			var c = self.store ? self.store.getItem( key ) : cookie( key );
 			self.data = c ? JSON.parse( c ) : {};
 		}else{
 			self._save( data );
@@ -1740,7 +1761,7 @@ model( "status", {
 		var self = this, key = self.options.key;
 		self.data = data;
 		data = JSON.stringify( data );
-		window.localStorage ? window.localStorage.setItem( key, data ) : cookie( key, data, {
+		self.store ? self.store.setItem( key, data ) : cookie( key, data, {
 			path: '/',
 			domain: document.domain
 		} );
@@ -1826,8 +1847,7 @@ model( "buddy", {
 				type: "get",
 				url: route( "buddies" ),
 				cache: false,
-				dataType: "jsonp",
-				data:{ ids: ids.join(",") },
+				data:{ ids: ids.join(","), csrf_token: webim.csrf_token },
 				context: self,
 				success: self.set
 			} );
@@ -1976,10 +1996,10 @@ model( "buddy", {
 				type: "get",
 				cache: false,
 				url: route( "members" ),
-				dataType: "jsonp",
 				data: {
 					ticket: options.ticket,
-					id: id
+					id: id,
+					csrf_token: webim.csrf_token
 				},
 				success: function(data){
 					self.addMember(id, data);
@@ -1990,14 +2010,14 @@ model( "buddy", {
 			var self = this, options = self.options, user = options.user;
 
 			ajax({
-				type: "get",
+				type: "post",
 				cache: false,
 				url: route( "join" ),
-				dataType: "jsonp",
 				data: {
 					ticket: options.ticket,
 					id: id,
-					nick: nick || ""
+					nick: nick || "", 
+					csrf_token: webim.csrf_token
 				},
 				success: function( data ) {
 					self.initMember( id );
@@ -2011,14 +2031,14 @@ model( "buddy", {
 			if(d){
 				d.initMember = false;
 				ajax({
-					type: "get",
+					type: "post",
 					cache: false,
 					url: route( "leave" ),
-					dataType: "jsonp",					
 					data: {
 						ticket: options.ticket,
 						id: id,
-						nick: user.nick
+						nick: user.nick, 
+						csrf_token: webim.csrf_token
 					}
 				});
 				self.trigger("leave",[d]);
@@ -2080,10 +2100,9 @@ model("history", {
 		self.trigger("clear", [type, id]);
 		ajax({
 			url: route( "clear" ),
-			type: "get",
+			type: "post",
 			cache: false,
-			dataType: "jsonp",
-			data:{ type: type, id: id }
+			data:{ type: type, id: id, csrf_token: webim.csrf_token }
 		});
 	},
 	download: function(type, id){
@@ -2116,8 +2135,7 @@ model("history", {
 			url: route( "history" ),
 			cache: false,
 			type: "get",
-			dataType: "jsonp",
-			data:{type: type, id: id},
+			data:{type: type, id: id, csrf_token: webim.csrf_token},
 			//context: self,
 			success: function(data){
 				self.init(type, id, data);
@@ -2127,14 +2145,14 @@ model("history", {
 } );
 })(window, document);
 /*!
- * Webim UI v3.0.1
+ * Webim UI v5.1 
  * http://www.webim20.cn/
  *
  * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Sat Nov 9 16:11:32 2013 +0800
- * Commit: 2ed4c6ec190a213dd53f43b523ca8c09be11d3e4
+ * Date: Fri Jan 10 22:23:54 2014 +0800
+ * Commit: ac2b3a60253163624266c5a7a92c1dd0bac27cc7
  */
 (function(window,document,undefined){
 
@@ -2905,7 +2923,7 @@ function app(name, events){
 	webimUI.apps[name] = events || {};
 }
 extend(webimUI,{
-	version: "3.0.1",
+	version: "5.1 ",
 	widget: widget,
 	app: app,
 	plugin: plugin,
@@ -3524,7 +3542,8 @@ widget("layout",{
 		var w = (windowWidth() - 45) - $.shortcut.offsetWidth - $.widgets.offsetWidth - 70;
 		self.maxVisibleTabs = parseInt(w / self.tabWidth);
 		self._fitUI();
-		self._autoResizeWindow();
+		if( !self.options.disableResize )
+			self._autoResizeWindow();
 		self._ready = true;
 	},
 	_autoResizeWindow: function(){
@@ -4165,8 +4184,12 @@ widget("upload", {
 				if( !data.url || data.error ) {
 					alert( data.error || 'Upload error' );
 				} else {
-					var markup = ["image/jpeg","image/jpg","image/gif","image/png"].indexOf(data.type) == -1 
-						? "" : "!";
+					var markup = "", ar = ["image/jpeg","image/jpg","image/gif","image/png"];
+					for (var i = 0; i < ar.length; i++) {
+						if( ar[i] == data.type ) {
+							markup = "!";break;
+						}
+					};
 					markup += "["+(data.name || "").replace(/\[|\]/ig, "")+"]("+data.url+")";
 					if( data.thumbnailUrl )
 						markup += "("+data.thumbnailUrl+")";
@@ -4463,7 +4486,7 @@ widget("chat",{
 			nick: options.user.nick,
 			to_nick: info.nick,
 			//stype: '',
-			offline: info.presence != "online",
+			offline: info.presence != "online" ? "true" : "false",
 			timestamp: (new Date()).getTime() - date.timeSkew,
 			body: val
 		};
@@ -4536,6 +4559,7 @@ widget("chat",{
 	_updateInfo:function(info){
 		var self = this, $ = self.$;
 		$.userPic.setAttribute("href", info.url);
+		$.userPic.setAttribute("target", info.target || self.options.target || "");
 		$.userPic.firstChild.setAttribute("defaultsrc", info.default_pic_url ? info.default_pic_url : "");
 		setTimeout(function(){
 			if(info.pic_url || info.default_pic_url) {
@@ -4829,6 +4853,11 @@ widget("setting",{
 },{
 	_init: function(){
 		//this._initEvents();
+		var copyright = this.options.copyright;	
+		if( copyright ) {
+			copyright = copyright === true ? '<p style="margin: 5px 10px;text-align:right;"><a class="webim-gray" href="http://nextalk.im/" target="_blank">Powered by NextTalk</a></p>' : copyright;
+			this.element.appendChild(createElement(copyright));
+		}
 	},
 	template: function(){
 		var self = this, temp = [], data = self.options.data;
@@ -5205,7 +5234,7 @@ widget("buddy",{
 						</div>\
 							</div>',
 	tpl_group: '<li><h4><%=title%>(<%=count%>)</h4><hr class="webim-line ui-state-default" /><ul></ul></li>',
-	tpl_li: '<li title=""><a href="<%=url%>" rel="<%=id%>" class="ui-helper-clearfix"><div id=":tabCount" class="webim-window-tab-count">0</div><em class="webim-icon webim-icon-<%=show%>" title="<%=human_show%>"><%=show%></em><img width="25" src="<%=pic_url%>" defaultsrc="<%=default_pic_url%>" onerror="var d=this.getAttribute(\'defaultsrc\');if(d && this.src!=d)this.src=d;" /><strong><%=nick%></strong><span><%=status%></span></a></li>'
+	tpl_li: '<li title="" class="webim-buddy-<%=show%>"><a href="<%=url%>" rel="<%=id%>" class="ui-helper-clearfix"><div id=":tabCount" class="webim-window-tab-count">0</div><em class="webim-icon webim-icon-<%=show%>" title="<%=human_show%>"><%=show%></em><img width="25" src="<%=pic_url%>" defaultsrc="<%=default_pic_url%>" onerror="var d=this.getAttribute(\'defaultsrc\');if(d && this.src!=d)this.src=d;" /><strong><%=nick%></strong><span><%=status%></span></a></li>'
 },{
 	_init: function(){
 		var self = this, options = self.options;
@@ -5315,11 +5344,12 @@ self.trigger("offline");
 		self.notice("offline");
 	},
 	_updateInfo:function(el, info){
+		var show = info.show ? info.show : "available";
+		el.className = "webim-buddy-" + show;
 		el = el.firstChild;
 		el.setAttribute("href", info.url);
 		el = el.firstChild;//tabCount...
 		el = el.nextSibling;
-		var show = info.show ? info.show : "available";
 		el.className = "webim-icon webim-icon-" + show;
 		el.setAttribute("title", i18n(show));
 		el = el.nextSibling;
@@ -5507,6 +5537,9 @@ app("room", function( options ) {
 				}, i*500);
 			})(msg, i);
 		};
+	}).bind("exit", function(e, id){
+		room.block( id );
+		layout.removeChat("room",id);
 	});
 	im.bind("event", function( e, events ) {
 		for (var i = 0; i < events.length; i++) {
@@ -5607,7 +5640,7 @@ widget("room",{
 	</div>\
 	<div id=":actions" class="webim-room-actions"><a id=":create" href="#" class="webim-button ui-state-default ui-corner-all"><%=create discussion%></a></div>\
 	</div>',
-	tpl_li: '<li title=""><input class="webim-button ui-state-default ui-corner-all" type="button" value="<%=invite%>" /><a href="<%=url%>" rel="<%=id%>" class="ui-helper-clearfix"><div id=":tabCount" class="webim-window-tab-count">0</div><img width="25" src="<%=pic_url%>" defaultsrc="<%=default_pic_url%>" onerror="var d=this.getAttribute(\'defaultsrc\');if(d && this.src!=d)this.src=d;" /><strong><%=nick%></strong></a></li>'
+	tpl_li: '<li title=""><input class="webim-button ui-state-default ui-corner-all" type="button" value="<%=exit%>" /><input class="webim-button ui-state-default ui-corner-all" type="button" value="<%=invite%>" /><a href="<%=url%>" rel="<%=id%>" class="ui-helper-clearfix"><div id=":tabCount" class="webim-window-tab-count">0</div><img width="25" src="<%=pic_url%>" defaultsrc="<%=default_pic_url%>" onerror="var d=this.getAttribute(\'defaultsrc\');if(d && this.src!=d)this.src=d;" /><strong><%=nick%></strong></a></li>'
 },{
 	_init: function(){
 		var self = this;
@@ -5659,7 +5692,7 @@ widget("room",{
 		toggleClass(this.element, "webim-room-scroll", is);
 	},
 	_updateInfo:function(el, info){
-		el = el.firstChild.nextSibling;
+		el = el.firstChild.nextSibling.nextSibling;
 		el.setAttribute("href", info.url);
 		el = el.firstChild.nextSibling;
 		el.setAttribute("defaultsrc", info.default_pic_url ? info.default_pic_url : "");
@@ -5675,14 +5708,20 @@ widget("room",{
 			if(!info.default_pic_url)info.default_pic_url = "";
 			var el = li[id] = createElement(tpl(self.options.tpl_li, info));
 			//self._updateInfo(el, info);
-			var a = el.firstChild;
+			var exit = el.firstChild;
+			var a = el.firstChild.nextSibling;
 			if( info.temporary ) {
+				addEvent(exit, "click",function(e){
+					preventDefault(e);
+					self.trigger( "exit", [id] );
+				});
 				addEvent(a, "click",function(e){
 					preventDefault(e);
 					self.updateDiscussion( info );
 				});
 			} else {
 				hide( a );
+				hide( exit );
 			}
 			addEvent(a.nextSibling, "click",function(e){
 				preventDefault(e);
@@ -6074,7 +6113,6 @@ model("notification",{
 		ajax({
 			url: route( "notifications" ),
 			cache: false,
-			dataType: self.options.jsonp ? "jsonp" : "json",
 			context: self,
 			success: self.handle
 		});
@@ -6143,7 +6181,7 @@ widget("notification",{
 		return tpl(this.options.tpl_li, {
 			text: data.text,
 			link: data.link,
-			target: data.isExtlink ? "_blank" : ""
+			target: this.options.target || data.target || ""
 		});
 	},
 	_fitUI:function(){
