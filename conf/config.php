@@ -1,5 +1,5 @@
 <?php return array (
-  'version' => '5.1',
+  'version' => '5.2',
   'isopen' => true,
   'debug' => true,
   'domain' => 'localhost',

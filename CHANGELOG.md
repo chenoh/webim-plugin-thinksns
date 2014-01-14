@@ -1,6 +1,15 @@
 CHANGELOG
 =========================
 
+v5.2
+--------------------------------------
+* static/静态文件更新到5.2版本，css/js去掉thinksns后缀
+* 通过model('Xdata')读写配置
+* lib/WebimClient.class.php更新online、join接口，增加presences、push接口
+* WebimAction.class.php修改online上线接口
+* WebimAction.class.php变更run接口为boot
+* hooks/WebimHooks.class.php嵌入代码变更
+
 v5.1.1
 --------------------------------------
 

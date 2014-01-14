@@ -361,9 +361,9 @@ class WebimClient
 			return (object)array(
 				"success" => true, 
 				"connection" => $connection, 
-				"buddies" => $buddies, 
-				"rooms" => $groups, 
-				"groups" => $groups, 
+				"buddies" => $da->buddies, 
+				"rooms" => $da->groups, 
+				"groups" => $da->groups, 
 				"server_time" => microtime(true)*1000, 
 				"user" => $this->user
 			);
