@@ -49,13 +49,13 @@ class HistoryModel extends Model {
 	}
 
 	public function clear($uid, $with) {
-		$this->where( array('from' => "$uid", 'to' => "$with") )->save( array( "fromdel" => 1, "type" => "chat" ) );
-		$this->where( array('to' => "$uid", 'from' => "$with") )->save( array( "todel" => 1, "type" => "chat" ) );
-		$this->where( array('todel' => 1, 'fromdel' => 1) )->delete();
+		$this->where( "`from` = '$uid' and `to` = '$with'" )->save( array( "fromdel" => 1, "type" => "chat" ) );
+		$this->where( "`to` = '$uid' and `from` = '$with'" )->save( array( "todel" => 1, "type" => "chat" ) );
+		$this->where( "`todel` = 1 and `fromdel` = 1" )->delete();
 	}
 
 	public function offlineReaded($uid) {
-		$this->where( array('to' => '$uid', 'send' => 0) )->save( array('send' => 1) );
+		$this->where( "`to` = '$uid' and `send` = 0") ->save( array('send' => 1) );
 	}
 
 }

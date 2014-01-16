@@ -56,6 +56,10 @@ class WebimAction {
 		//用户未登录
 		if(!$this->thinkim->logined()) exit();
 
+        $user = $this->thinkim->user();
+        //FIX offline bug
+        $user->show = "unavailable";
+
 		$fields = array(
 			'version',
 			'theme', 
@@ -75,7 +79,7 @@ class WebimAction {
 			'path' => WEBIM_URL,
 			'is_login' => '1',
 			'login_options' => '',
-			'user' => $this->thinkim->user(),
+			'user' => $user,
 			'setting' => $this->settingModel->get($this->thinkim->uid()),
 			'min' => $IMC['debug'] ? "" : ".min"
 		);
