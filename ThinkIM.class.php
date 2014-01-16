@@ -87,7 +87,13 @@ class ThinkIM {
 		$friends = model('User')->getUserInfoByUids($fids);
 		if(!$friends) $friends = array();
 		//获取管理员信息列表
-		$admins = model('User')->getUserInfoByUids($IMC['admin_uids']);
+        $admin_uids = array();
+        foreach(explode(",", $IMC['admin_uids']) as $uid) {
+            if(! (in_array($uid, $fids) or $uid == $this->uid()) ) {
+                $admin_uids[] = $uid;
+            }
+        }
+		$admins = model('User')->getUserInfoByUids($admin_uids);
 		if(!$admins) $admins = array();
 		//转换为Webim Buddy对象.
 		return $this->toBuddies(array_merge($admins, $friends));
