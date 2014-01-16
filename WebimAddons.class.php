@@ -8,7 +8,7 @@
  */
 class WebimAddons extends NormalAddons
 {
-    protected $version = '5.1';
+    protected $version = '5.2';
     protected $author  = '杭州巨鼎信息技术有限公司';
     protected $thanks  = 'Ery Lee';
     protected $site    = 'http://nextalk.im';
@@ -67,8 +67,7 @@ class WebimAddons extends NormalAddons
         $sql = "CREATE TABLE IF NOT EXISTS `{$db_prefix}webim_settings` (
                     `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
                     `uid` varchar(40) NOT NULL,
-                    `web` blob,
-                    `air` blob,
+                    `data` blob,
                     `created_at` date DEFAULT NULL,
                     `updated_at` date DEFAULT NULL,
                     PRIMARY KEY (`id`) 

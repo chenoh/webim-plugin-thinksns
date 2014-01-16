@@ -16,7 +16,6 @@ Webim plugin for ThinkSNS V3
 =====
 
 *   插件解压到addons/plugin/目录
-*   修改配置文件可写: chmod 777 addons/plugin/Webim/conf/config.php
 *   后台管理启动WebIM插件
 *   WebIM管理界面配置相关参数  
 

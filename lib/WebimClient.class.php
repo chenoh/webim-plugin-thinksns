@@ -141,8 +141,8 @@ class WebimClient
 		$this->client->get($this->apiurl('group/members'), $data);
 		$cont = $this->client->getContent();
 		if($this->client->status == "200"){
-			$da = json_decode($cont);
-			return $da ->{$gid};
+            //5.2 fix
+			return json_decode($cont);
 		}else{
 			return null;
 		}
@@ -338,7 +338,7 @@ class WebimClient
 		}else{
 			$ticket = $da->ticket;
 			$this->ticket = $ticket;
-            /*
+            /* 5.2 fix
              * No need to process.
 			$buddies = array();
 			foreach($da->buddies as $buddy){
@@ -361,6 +361,7 @@ class WebimClient
 			return (object)array(
 				"success" => true, 
 				"connection" => $connection, 
+                //5.2 fix
 				"buddies" => $da->buddies, 
 				"rooms" => $da->groups, 
 				"groups" => $da->groups, 

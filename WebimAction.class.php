@@ -334,6 +334,7 @@ EOF;
 		if($room){
 			$re = $this->client->join($id);
 			if($re){
+                //5.2 fix
 				$room->count = $re->{$id};
 				$this->jsonReturn($room);
 			}else{
