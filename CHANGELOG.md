@@ -1,6 +1,11 @@
 CHANGELOG
 =========================
 
+v5.2.1
+--------------------------------------
+* webim_settings表变更,去掉web, air列，增加data列
+* SettingModel.class.php更新
+
 v5.2
 --------------------------------------
 * static/静态文件更新到5.2版本，css/js去掉thinksns后缀
