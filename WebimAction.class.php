@@ -78,6 +78,7 @@ class WebimAction {
 			'production_name' => WEBIM_PRODUCTION_NAME,
 			'path' => WEBIM_URL,
 			'is_login' => '1',
+            'is_visitor' => $this->thinkim->isVisitor(),
 			'login_options' => '',
 			'user' => $user,
 			'setting' => $this->settingModel->get($this->thinkim->uid()),
