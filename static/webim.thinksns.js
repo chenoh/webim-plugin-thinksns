@@ -1,8 +1,11 @@
 //custom
-(function(webim){
+(function(webim) {
 	var path = _IMC.path;
-	webim.extend(webim.setting.defaults.data, _IMC.setting );
-	var webim = window.webim;
+	webim.extend(webim.setting.defaults.data, _IMC.setting);
+    var cookie_key = "_webim_cookie_";
+	if( _IMC.is_visitor ) { cookie_key = "_webim_v_cookie_"; }
+    if( _IMC.user != "" ) { cookie_key = cookie_key + _IMC.user.id; }
+    webim.status.defaults.key = cookie_key;
 	webim.route( {
 		online: path + "/index.php?action=online",
 		offline: path + "/index.php?action=offline",
@@ -14,11 +17,18 @@
 		history: path + "/index.php?action=history",
 		clear: path + "/index.php?action=clear_history",
 		download: path + "/index.php?action=download_history",
-		members: path + "/index.php?action=members",
+		buddies: path + "/index.php?action=buddies",
+        //room actions
+		invite: path + "/index.php?action=invite",
 		join: path + "/index.php?action=join",
 		leave: path + "/index.php?action=leave",
-		buddies: path + "/index.php?action=buddies",
-		notifications: path + "/index.php?action=notifications"
+		block: path + "/index.php?action=block",
+		unblock: path + "/index.php?action=unblock",
+		members: path + "/index.php?action=members",
+        //notifications
+		notifications: path + "/index.php?action=notifications",
+        //upload files
+		upload: path + "/static/images/upload.php"
 	} );
 
 	webim.ui.emot.init({"dir": path + "/static/images/emot/default"});
@@ -31,15 +41,22 @@
 			jsonp: _IMC.jsonp
 		},
 		soundUrls: soundUrls,
+		//layout: "layout.popup",
+        layoutOptions: {
+            unscalable: _IMC.is_visitor
+        },
 		buddyChatOptions: {
             downloadHistory: !_IMC.is_visitor,
-			simple: _IMC.is_visitor,
+			//simple: _IMC.is_visitor,
 			upload: _IMC.upload && !_IMC.is_visitor
 		},
 		roomChatOptions: {
+            downloadHistory: !_IMC.is_visitor,
 			upload: _IMC.upload
 		}
 	}), im = ui.im;
+    //全局化
+    window.webimUI = ui;
 
 	if( _IMC.user ) im.setUser( _IMC.user );
 	if( _IMC.menu ) ui.addApp("menu", { "data": _IMC.menu } );
@@ -48,18 +65,19 @@
 	ui.addApp("buddy", {
 		showUnavailable: _IMC.show_unavailable,
 		is_login: _IMC['is_login'],
-		enable_login: true,
+		disable_login: true,
 		collapse: false,
-		disable_user: _IMC.is_visitor,
-        simple: _IMC.is_visitor,
+		//disable_user: _IMC.is_visitor,
+        //simple: _IMC.is_visitor,
 		loginOptions: _IMC['login_options']
 	} );
     if(!_IMC.is_visitor) {
-        if( _IMC.enable_room )ui.addApp("room", { discussion: false});
-        if( _IMC.enable_noti )ui.addApp("notification");
+        if( _IMC.enable_room )ui.addApp("room", { discussion: (_IMC.discussion && !_IMC.is_visitor) });
+        if(_IMC.enable_noti )ui.addApp("notification");
         //if( _IMC.enable_chatlink )ui.addApp("chatlink", { off_link_class: /r_option|spacelink/i });
     }
-    ui.addApp("setting", {"data": webim.setting.defaults.data});
+    ui.addApp("chatbtn");
+    ui.addApp("setting", {"data": webim.setting.defaults.data, "copyright": true});
 	ui.render();
 	_IMC['is_login'] && im.autoOnline() && im.online();
 })(webim);
