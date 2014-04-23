@@ -55,18 +55,18 @@ function WEBIM_IMAGE($img) { return WEBIM_PATH() . "/static/images/{$img}"; }
  * -----------------------
  */
 
-if($IMC['debug']) {
-    define(WEBIM_DEBUG, true);
-} else {
-    define(WEBIM_DEBUG, false);
-}
+if($IMC['debug']) { define('WEBIM_DEBUG', true); } 
 
 // Modify error reporting levels to exclude PHP notices
-if( WEBIM_DEBUG ) {
+/*
+if( defined('WEBIM_DEBUG') ) {
 	error_reporting( -1 );
 } else {
 	error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT );
 }
+ */
+
+error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT );
 
 if( !$IMC['isopen'] ) exit();
 

@@ -13,32 +13,33 @@ class WebimHooks extends Hooks
     }
 
 	public function config() {
-		$cfg = model('Xdata')->get('hook_webim_plugin:config');
-		if(!$cfg or count($cfg) == 0) {
-			$cfg = require_once SITE_PATH . '/addons/plugin/Webim/config.php';
-		}
+		$cfg = $this->loadCfg();
 		$this->assign('IMC', $cfg);
 		$this->display('config');
 	}
 
 	public function saveConfig() {
-        $cfg = require SITE_PATH . '/addons/plugin/Webim/config.php';
+        $cfg = $this->loadCfg();
+
         if(!$_POST['domain']) {
 			$this->error('注册域名不能为空');
             return;
         }
         $cfg['domain'] = $_POST['domain'];
+
         if(!$_POST['apikey']) {
 			$this->error('ApiKey不能为空');
             return;
         }
         $cfg['apikey'] = $_POST['apikey'];
+
         if(!$_POST['server']) {
 			$this->error('IM服务器不能为空');
             return;
         }
-		$cfg['isopen'] = $this->toBool($_POST['isopen']);
         $cfg['server'] = $_POST['server'];
+
+		$cfg['isopen'] = $this->toBool($_POST['isopen']);
         $cfg['local'] = $_POST['local'];
         $cfg['emot'] = $_POST['emot'];
         $cfg['opacity'] = $_POST['opacity'];
@@ -55,12 +56,14 @@ class WebimHooks extends Hooks
         $this->success('设置成功');
 	}
 
+    /*
 	public function writeConfig($cfg) {
 		$data = '<?php return ' . var_export($cfg, true) . ';';
 		$file = fopen(SITE_PATH. '/addons/plugin/Webim/config.php', "wb");
 		fwrite($file, $data);  
 		@fclose($file);
 	}
+    */
 
     public function scanDir( $dir ) {
         $d = dir( $dir."/" );
@@ -73,10 +76,9 @@ class WebimHooks extends Hooks
     }
 
 	public function skin() {
-		$cfg = require SITE_PATH. '/addons/plugin/Webim/config.php';
+        $cfg = $this->loadCfg();
         $path = SITE_PATH. '/addons/plugin/Webim/static/themes';
 		$theme_url = SITE_URL. '/addons/plugin/Webim/static/themes';
-
         $files = $this->scanDir($path);
         $themes = array();
         foreach ($files as $k => $v){
@@ -92,10 +94,7 @@ class WebimHooks extends Hooks
 
 	public function saveSkin() {
 		if($_POST) {
-            $cfg = model('Xdata')->get('hook_webim_plugin:config');
-            if(!$cfg or count($cfg) == 0) {
-                $cfg = require_once SITE_PATH . '/addons/plugin/Webim/config.php';
-            }
+            $cfg = $this->loadCfg();
 			$cfg['theme'] = $_POST['theme'];
             model('Xdata')->saveKey('hook_webim_plugin:config', $cfg);
 		    $this->success('设置成功, 主题设置为: ' . $_POST['theme']);
@@ -125,6 +124,14 @@ class WebimHooks extends Hooks
 		    $this->success('清除成功: ' . $sql);
 	    }
 	}
+
+    private function loadCfg() {
+		$cfg = model('Xdata')->get('hook_webim_plugin:config');
+		if(!$cfg or count($cfg) == 0) {
+			$cfg = require_once SITE_PATH . '/addons/plugin/Webim/config.php';
+		}
+        return $cfg;
+    }
 
 	private function toBool($s) {
 		return $s == 'true' ? true : false;

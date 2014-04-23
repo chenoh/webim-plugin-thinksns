@@ -54,13 +54,15 @@ class ThinkSNS_Plugin extends Plugin {
         global $_SESSION;
         $uid = $_SESSION['mid'];
         if(!$uid) return null;
+        $user = model('User')->getUserInfo($uid);
+        if(!$user) return null;
 		return (object) array (
 			'id'		=> (string)$uid,
 			'nick'		=> $user['uname'],
 			'pic_url'	=> $user['avatar_small'],
 			'url'		=> $user['space_url'],
 			'status'	=> $user['intro'],
-            'role'      => $user['admin_level'] ? 'admin' : 'user',
+            'role'      => (isset($user['admin_level']) && $user['admin_level']) ? 'admin' : 'user',
 		);
 
     }
@@ -118,8 +120,9 @@ class ThinkSNS_Plugin extends Plugin {
 	 * Buddy
 	 */
 	public function buddiesByIds($uid, $ids) {
+        if( count($ids) === 0 ) return array();
 		//根据id列表获取好友列表
-		$friends = model('User')->getUserInfoByUids($friend_uids);
+		$friends = model('User')->getUserInfoByUids($ids);
         if(!$friends) $friends = array();
         return $this->toBuddies($friends);
     }
@@ -200,7 +203,6 @@ class ThinkSNS_Plugin extends Plugin {
 	 */	
 	public function notifications($uid) {
 		$notices = array();
-		$uid = $this->uid();
 		$userCount = model('UserCount')->getUnreadCount($uid);
 		if(!$userCount) $userCount = array();
 		if ($userCount['unread_notify']) {
@@ -244,7 +246,7 @@ class ThinkSNS_Plugin extends Plugin {
      * link
      */
     public function menu($uid) {
-		$apps = model('App')->getUserApp($this->uid());
+		$apps = model('App')->getUserApp($uid);
 		if(!$apps) $apps = array();
 		$menu = array();
 		foreach($apps as $app) {

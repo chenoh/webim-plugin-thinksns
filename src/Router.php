@@ -147,6 +147,9 @@ class Router {
         $this->user->show = "unavailable";
         $uid = $this->user->id;
         $webim_path = WEBIM_PATH();
+        if( substr($webim_path, strlen($webim_path)-1) !== '/' ) {
+            $webim_path .= '/';
+        }
 
 		$scriptVar = array(
             'version' => WEBIM_VERSION,

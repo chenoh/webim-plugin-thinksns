@@ -4,7 +4,7 @@ return array (
   //WebIM Config
   'version' => '5.4',
   'isopen' => true,
-  'debug' => true,
+  'debug' => false,
   'domain' => 'localhost',
   'apikey' => 'public',
   'server' => 't.nextalk.im:8000',
