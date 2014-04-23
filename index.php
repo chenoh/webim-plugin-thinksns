@@ -39,10 +39,10 @@ if(!$IMC or count($IMC) == 0) { $IMC = require('config.php'); }
 
 if( !$IMC['isopen'] ) exit('WebIM Not Opened');
 
-$IMC['dbuser'] = 
-$IMC['dbpassword'] = 
-$IMC['dbname'] = 
-$IMC['dbhost'] = 
+$IMC['dbuser'] = C('DB_USER');
+$IMC['dbpassword'] = C('DB_PWD');
+$IMC['dbname'] = C('DB_NAME');
+$IMC['dbhost'] = C('DB_HOST');
 $IMC['dbprefix'] =  C('DB_PREFIX') . 'webim_';
 
 function WEBIM_PATH() { return WEBIM_URL; }

@@ -1,4 +1,6 @@
-<?php return array (
+<?php 
+
+return array (
   //WebIM Config
   'version' => '5.4',
   'isopen' => true,

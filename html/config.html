@@ -15,32 +15,27 @@
            </dl>
 
             <dl class="lineD">
-                <dt>注册域名：</dt>
+                <dt>网站域名：</dt>
                 <dd>
                     <input class="text" type="text" id="domain" value="{$IMC.domain}" name="domain">
-                    <p>在线版用户输入在nextalk.im中注册的域名</p>
+                    <p>免费用户输入在nextalk.im注册的域名</p>
                 </dd>
             </dl>
 
             <dl class="lineD">
-                <dt>注册ApiKey：</dt>
+                <dt>APIKEY：</dt>
                 <dd>
                     <input class="text" type="text" id="apikey" value="{$IMC.apikey}" name="apikey">
+                    <p>免费用户在nextalk.im申请</p>
                 </dd>
             </dl>
             <dl class="lineD">
                 <dt>IM服务器: </dt>
                 <dd>
-                    <input class="text" type="text" id="host" value="{$IMC.host}" name="host" placeholder="webim20.cn">
+                    <input class="text" type="text" id="host" value="{$IMC.server}" name="server" placeholder="t.nextalk.im:8000">
                 </dd>
             </dl>
 
-            <dl class="lineD">
-                <dt>IM服务器端口：</dt>
-                <dd>
-                    <input class="text" type="text" id="port" value="{$IMC.port}" name="port" placeholder="8000">
-                </dd>
-            </dl>
              <dl class="lineD">
                 <dt>本地语言：</dt>
                 <dd>
@@ -88,14 +83,6 @@
                 <dd>
                 <input class="radio" type="radio" name="enable_chatlink" value="true"  <?php echo $IMC['enable_chatlink'] ? 'checked=""' : '' ?>>&nbsp;是
                 <input class="radio" type="radio" name="enable_chatlink" value="false" <?php echo ! $IMC['enable_chatlink'] ? 'checked=""' : '' ?>>&nbsp;否
-                </dd>
-            </dl>
-
-             <dl class="lineD">
-                <dt>显示真实姓名:</dt>
-                <dd>
-                <input class="radio" type="radio" name="show_realname" value="true"  <?php echo $IMC['show_realname'] ? 'checked=""' : '' ?>>&nbsp;是
-                <input class="radio" type="radio" name="show_realname" value="false" <?php echo ! $IMC['show_realname'] ? 'checked=""' : '' ?>>&nbsp;否
                 </dd>
             </dl>
 

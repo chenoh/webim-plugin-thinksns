@@ -33,12 +33,12 @@ class WebimHooks extends Hooks
             return;
         }
         $cfg['apikey'] = $_POST['apikey'];
-        if(!$_POST['host'] || !$_POST['port']) {
-			$this->error('IM服务器和端口不能为空');
+        if(!$_POST['server']) {
+			$this->error('IM服务器不能为空');
             return;
         }
 		$cfg['isopen'] = $this->toBool($_POST['isopen']);
-        $cfg['server'] = $_POST['serve'];
+        $cfg['server'] = $_POST['server'];
         $cfg['local'] = $_POST['local'];
         $cfg['emot'] = $_POST['emot'];
         $cfg['opacity'] = $_POST['opacity'];
@@ -92,9 +92,12 @@ class WebimHooks extends Hooks
 
 	public function saveSkin() {
 		if($_POST) {
-			$cfg = require SITE_PATH. '/addons/plugin/Webim/config.php';
+            $cfg = model('Xdata')->get('hook_webim_plugin:config');
+            if(!$cfg or count($cfg) == 0) {
+                $cfg = require_once SITE_PATH . '/addons/plugin/Webim/config.php';
+            }
 			$cfg['theme'] = $_POST['theme'];
-			$this->writeConfig($cfg);
+            model('Xdata')->saveKey('hook_webim_plugin:config', $cfg);
 		    $this->success('设置成功, 主题设置为: ' . $_POST['theme']);
 		}
 	}
