@@ -1,52 +1,113 @@
 <?php
-/*
- * Webim插件AJAX请求入口文件
- * @author ery lee <ery.lee at gmail.com>
- * @version 5.1
- */ 
-define('WEBIM_VERSION', '5.1');
-define('WEBIM_PRODUCTION_NAME', 'thinksns');
-define('WEBIM_DEBUG', false);
-define('WEBIMDB_CHARSET', 'utf8');
-//define('WEBIM_PATH', '.');
 
-if(WEBIM_DEBUG) {
-	error_reporting( E_ALL );
-} else {
-	error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED );
-}
+/**
+ * WebIM-for-ThinkSNS插件入口文件
+ *
+ * @author ery lee <ery.lee at gmail.com>
+ * @copyright   (C) 2014 NexTalk.IM
+ * @license     http://nextalk.im/license
+ * @lastmodify  2014-04-23
+ * @version 5.4
+ */ 
+
+if(phpversion() < '5.3.10') { exit('PHP version should be > 5.3.10'); }
+
+/**
+ * Env
+ */
+require 'env.php';
+
+/**
+ * -------------------------
+ * integrated with thinksns
+ * -------------------------
+ */
 
 //NOTICE: Have to redefine SITE_URL.
 define('__ROOT__', chop($_SERVER['PHP_SELF'], '/addons/plugin/Webim/index.php'));
 defined('SITE_PATH') or define('SITE_PATH', dirname(dirname(dirname(dirname(__FILE__)))));
-
-require_once(SITE_PATH . '/core/core.php');
+require_once (SITE_PATH . '/core/core.php');
 
 define('WEBIM_URL', SITE_URL . '/addons/plugin/Webim');
 
+/**
+ * Configuration
+ */
 $IMC = model('Xdata')->get('hook_webim_plugin:config');
 
-if(!$IMC or count($IMC) == 0) {
-	$IMC = require_once('conf/config.php');
-}
+if(!$IMC or count($IMC) == 0) { $IMC = require('conf/config.php'); }
 
-tsload('lib/HttpClient.class.php');
-tsload('lib/WebimClient.class.php');
+if( !$IMC['isopen'] ) exit('WebIM Not Opened');
 
-tsload('model/SettingModel.class.php');
-tsload('model/HistoryModel.class.php');
-tsload('WebimAction.class.php');
-tsload('ThinkIM.class.php');
+$IMC['dbuser'] = 
+$IMC['dbpassword'] = 
+$IMC['dbname'] = 
+$IMC['dbhost'] = 
+$IMC['dbprefix'] =  C('DB_PREFIX') . 'webim_';
 
-$mod = new WebimAction();
+function WEBIM_PATH() { return WEBIM_URL; }
 
-$act = $mod->input('action');
+function WEBIM_IMAGE($img) { return WEBIM_PATH() . "/static/images/{$img}"; }
 
-if($act) {
-	call_user_func(array($mod, $act));
+/**
+ * -----------------------
+ * end
+ * -----------------------
+ */
+
+if($IMC['debug']) {
+    define(WEBIM_DEBUG, true);
 } else {
-	header( "HTTP/1.0 400 Bad Request" );
-	exit("No 'action' input parameter!");
+    define(WEBIM_DEBUG, false);
 }
+
+// Modify error reporting levels to exclude PHP notices
+if( WEBIM_DEBUG ) {
+	error_reporting( -1 );
+} else {
+	error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT );
+}
+
+if( !$IMC['isopen'] ) exit();
+
+define('WEBIM_ROOT', dirname(__FILE__));
+
+define('WEBIM_SRC', WEBIM_ROOT . '/src');
+
+/**
+ *
+ * WebIM Libraries
+ *
+ * https://github.com/webim/webim-php
+ *
+ */
+require WEBIM_ROOT.'/vendor/autoload.php';
+
+/**
+ * Model
+ */
+require WEBIM_SRC . '/Model.php';
+
+/**
+ * Base Plugin
+ */
+require WEBIM_SRC . '/Plugin.php';
+
+/**
+ * Router
+ */
+require WEBIM_SRC . '/Router.php';
+
+/**
+ * WebIM APP
+ */
+require WEBIM_SRC . '/App.php';
+
+/**
+ * WebIM Plugin for ThinkSNS
+ */
+require WEBIM_ROOT . '/ThinkSNS_Plugin.php';
+
+\WebIM\App::run( new \WebIM\ThinkSNS_Plugin() );
 
 

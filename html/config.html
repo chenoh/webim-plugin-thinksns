@@ -76,6 +76,14 @@
             </dl>
 
              <dl class="lineD">
+                <dt>开启临时讨论组</dt>
+                <dd>
+                <input class="radio" type="radio" name="discussion" value="true"  <?php echo $IMC['discussion'] ? 'checked=""' : '' ?>>&nbsp;是
+                <input class="radio" type="radio" name="discussion" value="false" <?php echo ! $IMC['discussion'] ? 'checked=""' : '' ?>>&nbsp;否
+                </dd>
+            </dl>
+
+             <dl class="lineD">
                 <dt>开启群陌生人聊天</dt>
                 <dd>
                 <input class="radio" type="radio" name="enable_chatlink" value="true"  <?php echo $IMC['enable_chatlink'] ? 'checked=""' : '' ?>>&nbsp;是

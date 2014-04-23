@@ -38,13 +38,12 @@ class WebimHooks extends Hooks
             return;
         }
 		$cfg['isopen'] = $this->toBool($_POST['isopen']);
-        $cfg['host'] = $_POST['host'];
-        $cfg['port'] = $_POST['port'];
+        $cfg['server'] = $_POST['serve'];
         $cfg['local'] = $_POST['local'];
         $cfg['emot'] = $_POST['emot'];
         $cfg['opacity'] = $_POST['opacity'];
-        $cfg['show_realname'] = $this->toBool($_POST['show_realname']);
         $cfg['enable_room'] = $this->toBool($_POST['enable_room']);
+        $cfg['discussion'] = $this->toBool($_POST['discussion']);
         $cfg['enable_chatlink'] = $this->toBool($_POST['enable_chatlink']);
         $cfg['enable_menu'] = $this->toBool($_POST['enable_menu']);
 		$cfg['enable_noti'] = $this->toBool($_POST['enable_noti']); 
