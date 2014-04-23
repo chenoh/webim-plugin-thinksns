@@ -35,7 +35,7 @@ define('WEBIM_URL', SITE_URL . '/addons/plugin/Webim');
  */
 $IMC = model('Xdata')->get('hook_webim_plugin:config');
 
-if(!$IMC or count($IMC) == 0) { $IMC = require('conf/config.php'); }
+if(!$IMC or count($IMC) == 0) { $IMC = require('config.php'); }
 
 if( !$IMC['isopen'] ) exit('WebIM Not Opened');
 

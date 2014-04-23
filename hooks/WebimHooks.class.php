@@ -15,14 +15,14 @@ class WebimHooks extends Hooks
 	public function config() {
 		$cfg = model('Xdata')->get('hook_webim_plugin:config');
 		if(!$cfg or count($cfg) == 0) {
-			$cfg = require_once SITE_PATH . '/addons/plugin/Webim/conf/config.php';
+			$cfg = require_once SITE_PATH . '/addons/plugin/Webim/config.php';
 		}
 		$this->assign('IMC', $cfg);
 		$this->display('config');
 	}
 
 	public function saveConfig() {
-        $cfg = require SITE_PATH . '/addons/plugin/Webim/conf/config.php';
+        $cfg = require SITE_PATH . '/addons/plugin/Webim/config.php';
         if(!$_POST['domain']) {
 			$this->error('注册域名不能为空');
             return;
@@ -57,7 +57,7 @@ class WebimHooks extends Hooks
 
 	public function writeConfig($cfg) {
 		$data = '<?php return ' . var_export($cfg, true) . ';';
-		$file = fopen(SITE_PATH. '/addons/plugin/Webim/conf/config.php', "wb");
+		$file = fopen(SITE_PATH. '/addons/plugin/Webim/config.php', "wb");
 		fwrite($file, $data);  
 		@fclose($file);
 	}
@@ -73,7 +73,7 @@ class WebimHooks extends Hooks
     }
 
 	public function skin() {
-		$cfg = require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+		$cfg = require SITE_PATH. '/addons/plugin/Webim/config.php';
         $path = SITE_PATH. '/addons/plugin/Webim/static/themes';
 		$theme_url = SITE_URL. '/addons/plugin/Webim/static/themes';
 
@@ -92,7 +92,7 @@ class WebimHooks extends Hooks
 
 	public function saveSkin() {
 		if($_POST) {
-			$cfg = require SITE_PATH. '/addons/plugin/Webim/conf/config.php';
+			$cfg = require SITE_PATH. '/addons/plugin/Webim/config.php';
 			$cfg['theme'] = $_POST['theme'];
 			$this->writeConfig($cfg);
 		    $this->success('设置成功, 主题设置为: ' . $_POST['theme']);
