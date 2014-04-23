@@ -9,7 +9,7 @@ class WebimHooks extends Hooks
     }
 
     public function public_footer($param) {
-        echo '<script src="'. SITE_URL .'/addons/plugin/Webim/index.php?action=boot"></script> ';
+        echo '<script src="'. SITE_URL .'/addons/plugin/Webim/index.php?action=boot&ts=' . microtime(true) . '"></script> ';
     }
 
 	public function config() {
