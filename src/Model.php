@@ -74,7 +74,7 @@ class Model {
                 ->where('send', 1)
                 ->orderByDesc('timestamp')->limit($limit);
         }
-        return array_reverse( $this->map2obj($query->findArray()) );
+        return array_reverse( array_map( array($this, '_toObj'), $query->findArray() ) );
     }
 
     /**
@@ -86,7 +86,7 @@ class Model {
 	public function offlineHistories($uid, $limit = 50) {
         $query = $this->T('histories')->where('to', $uid)->whereNotEqual('send', 1)
             ->orderByDesc('timestamp')->limit($limit);
-        return array_reverse( $this->map2obj($query->findArray()) );
+        return array_reverse( array_map( array($this, '_toObj'), $query->findArray() ) );
 	}
 
     /**
@@ -171,16 +171,7 @@ class Model {
             ->select('t2.url', 'url')
             ->join($this->prefix('rooms'), array('t1.room', '=', 't2.name'), 't2')
             ->where('t1.uid', $uid)->findArray();
-        return array_map(function($room) {
-            return (object)array(
-                'id' => $room['name'],
-                'nick' => $room['nick'],
-                "url" => $room['url'],
-                "pic_url" => WEBIM_IMAGE("room.png"),
-                "status" => "",
-                "temporary" => true,
-                "blocked" => false);
-        }, $rooms);
+        return array_map( array($this, '_roomObj'), $rooms );
     }
 
     /**
@@ -192,17 +183,22 @@ class Model {
     public function roomsByIds($uid, $ids) {
         if(empty($ids)) return array();
         $rooms = $this->T('rooms')->whereIn('name', $ids)->findArray();
-        return array_map(function($room) {
-            return (object)array(
-                'id' => $room['name'],
-                'name' => $room['name'],
-                'nick' => $room['nick'],
-                "url" => $room['url'],
-                "pic_url" => WEBIM_IMAGE("room.png"),
-                "status" => "",
-                "temporary" => true,
-                "blocked" => false);
-        }, $rooms);
+        return array_map( array($this, '_roomObj'), $rooms );
+    }
+
+    /**
+     * room object
+     */
+    private function _roomObj($room) {
+        return (object)array(
+            'id' => $room['name'],
+            'name' => $room['name'],
+            'nick' => $room['nick'],
+            "url" => $room['url'],
+            "pic_url" => WEBIM_IMAGE("room.png"),
+            "status" => "",
+            "temporary" => true,
+            "blocked" => false);
     }
 
     /**
@@ -216,7 +212,7 @@ class Model {
             ->select('uid', 'id')
             ->select('nick')
             ->where('room', $room)->findArray();
-        return $this->map2obj($members);
+        return array_map( array($this, '_toObj'), $members );
     }
 
     /**
@@ -414,15 +410,11 @@ class Model {
      * @return string table name with prefix
      */
     private function prefix($table) { 
-        global $IMC;
-        return $IMC['dbprefix'] . $table;
+        global $IMC; return $IMC['dbprefix'] . $table;
     }
 
-    /**
-     * Mapping array to object
-     */
-    private function map2obj($rows) {
-        return array_map(function($r) { return (object)$r; }, $rows);
+    private function _toObj($v) {
+        return (object)$v;
     }
 
 }

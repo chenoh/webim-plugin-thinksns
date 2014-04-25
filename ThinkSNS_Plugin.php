@@ -93,7 +93,7 @@ class ThinkSNS_Plugin extends Plugin {
 		//根据当前用户uid获取双向follow的好友id列表
 		$follows = model('Follow')->getFriendsData($uid);
 		if(!$follows) $follows = array();
-		$fids = array_map(function($u) { return $u['fid']; }, $follows);
+		$fids = array_map(array($this, '_fid'), $follows);
 		//获取好友信息列表
 		$friends = model('User')->getUserInfoByUids($fids);
 		if(!$friends) $friends = array();
@@ -108,6 +108,10 @@ class ThinkSNS_Plugin extends Plugin {
 		if(!$admins) $admins = array();
 		//转换为Webim Buddy对象.
 		return $this->toBuddies(array_merge($admins, $friends));
+    }
+
+    private function _fid($follow) {
+        return $follow['fid'];
     }
 
 	/*

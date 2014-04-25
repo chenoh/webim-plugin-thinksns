@@ -131,12 +131,13 @@ class Router {
 
         global $IMC;
 		$fields = array(
+            'version',
 			'theme', 
 			'local', 
 			'emot',
 			'opacity',
-			'enable_room', 
             'discussion',
+			'enable_room', 
 			'enable_chatlink', 
 			'enable_shortcut',
 			'enable_noti',
@@ -202,8 +203,13 @@ EOF;
 		}
         //buddies of uid
 		$buddies = $this->plugin->buddies($uid);
-        $buddyIds = array_map(function($buddy) { return $buddy->id; }, $buddies);
-        $buddyIdsWithoutInfo = array_filter( array_merge($chatlinkIds, $activeBuddyIds), function($id) use($buddyIds){ return !in_array($id, $buddyIds); } );
+        $buddyIds = array_map(array($this, 'buddyId'), $buddies);
+        $buddyIdsWithoutInfo = array();
+        foreach(array_merge($chatlinkIds, $activeBuddyIds) as $id) {
+            if( !in_array($id, $buddyIds) ) {
+                $buddyIdsWithoutInfo[] = $id;
+            }
+        }
         //buddies by ids
 		$buddiesByIds = $this->plugin->buddiesByIds($uid, $buddyIdsWithoutInfo);
 
@@ -219,7 +225,7 @@ EOF;
             //temporary rooms
 			$temporaryRooms = $this->model->rooms($uid);
             $rooms = array_merge($persistRooms, $temporaryRooms);
-            $roomIds = array_map(function($room) { return $room->id; }, $rooms);
+            $roomIds = array_map(array($this, 'roomId'), $rooms);
 		}
 
 		//===============Online===============
@@ -245,8 +251,11 @@ EOF;
                 }
 			}
             if( !$IMC['show_unavailable'] ) {
-                $rtBuddies = array_filter($rtBuddies, 
-                    function($buddy) { return $buddy->presence === 'online'; });        
+                $olBuddies = array();
+                foreach($rtBuddies as $buddy) {
+                    if($buddy->presence === 'online') $olBuddies[] = $buddy;
+                }
+                $rtBuddies = $olBuddies;
             }
             $rtRooms = array();
             if( $IMC['enable_room'] ) {
@@ -359,6 +368,7 @@ EOF;
      * Read History
      */
 	public function history() {
+        $uid = $this->user->id;
 		$with = $this->input('id');
 		$type = $this->input('type');
 		$histories = $this->model->histories($this->user->id, $with, $type);
@@ -369,8 +379,8 @@ EOF;
      * Clear History
      */
 	public function clear_history() {
-		$id = $this->input('id');
         $uid = $this->user->id;
+		$id = $this->input('id');
 		$this->model->clearHistories($uid, $id);
 		$this->okReply();
 	}
@@ -429,7 +439,7 @@ EOF;
 			exit("Nick is Null");
         }
         //find persist room 
-        $room = $this->findRoom($this->plugin, $roomId);
+        $room = $this->findRoom($this->model, $roomId);
         if(!$room) {
             //create temporary room
             $room = $this->model->createRoom(array(
@@ -554,7 +564,7 @@ EOF;
         $this->model->unblockRoom($room, $uid);
         $this->okReply();
     }
-    
+
     /**
      * Notifications
      */
@@ -601,6 +611,14 @@ EOF;
 
     private function isvid($id) {
         return strpos($id, 'vid:') === 0;
+    }
+
+    private function roomId($room) {
+        return $room->id;
+    }
+
+    private function buddyId($buddy) {
+        return $buddy->id;
     }
 
 }

@@ -2,7 +2,7 @@
 
 return array (
   //WebIM Config
-  'version' => '5.4',
+  'version' => '5.4.2',
   'isopen' => true,
   'debug' => false,
   'domain' => 'localhost',

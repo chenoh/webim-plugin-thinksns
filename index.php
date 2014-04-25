@@ -60,7 +60,7 @@ if($IMC['debug']) { define('WEBIM_DEBUG', true); }
 // Modify error reporting levels to exclude PHP notices
 
 if( defined('WEBIM_DEBUG') ) {
-	error_reporting( -1 );
+	error_reporting( E_ALL );
 } else {
 	error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT );
 }
