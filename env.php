@@ -1,6 +1,6 @@
 <?php
 
-define('WEBIM_VERSION', '5.4');
+define('WEBIM_VERSION', '@VERSION');
 
 define('WEBIM_PRODUCT', 'thinksns');
 

@@ -8,7 +8,7 @@
  */
 class WebimAddons extends NormalAddons
 {
-    protected $version = '5.4';
+    protected $version = '@VERSION';
     protected $author  = '杭州巨鼎信息技术有限公司';
     protected $thanks  = 'ery lee at gmail.com';
     protected $site    = 'http://nextalk.im';
