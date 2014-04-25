@@ -28,7 +28,7 @@ define('__ROOT__', chop($_SERVER['PHP_SELF'], '/addons/plugin/Webim/index.php'))
 defined('SITE_PATH') or define('SITE_PATH', dirname(dirname(dirname(dirname(__FILE__)))));
 require_once (SITE_PATH . '/core/core.php');
 
-define('WEBIM_URL', SITE_URL . '/addons/plugin/Webim');
+//define('WEBIM_URL', SITE_URL . '/addons/plugin/Webim');
 
 /**
  * Configuration
@@ -45,9 +45,15 @@ $IMC['dbname'] = C('DB_NAME');
 $IMC['dbhost'] = C('DB_HOST');
 $IMC['dbprefix'] =  C('DB_PREFIX') . 'webim_';
 
-function WEBIM_PATH() { return WEBIM_URL; }
+function WEBIM_PATH() {
+	global $_SERVER;
+    $name = htmlspecialchars($_SERVER['SCRIPT_NAME'] ? $_SERVER['SCRIPT_NAME'] : $_SERVER['PHP_SELF']); 
+    return substr( $name, 0, strrpos( $name, '/' ) ) . "/";
+}
 
-function WEBIM_IMAGE($img) { return WEBIM_PATH() . "/static/images/{$img}"; }
+function WEBIM_IMAGE($img) {
+    return WEBIM_PATH() . "static/images/{$img}";
+}
 
 /**
  * -----------------------
