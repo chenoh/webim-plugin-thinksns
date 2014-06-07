@@ -1,2 +1,5 @@
 4. 写Develop Guide
 5. 安装部署文档
+config.php
+env.php
+WebimAddons.class.php*
