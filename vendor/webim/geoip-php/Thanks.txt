@@ -1,1 +1,0 @@
-All code is from www.17mon.cn, we just wrap it as a compser package.
