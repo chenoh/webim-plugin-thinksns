@@ -2266,8 +2266,8 @@ model("history", {
  * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Thu Jun 5 21:20:27 2014 +0800
- * Commit: 556529dd4dd1d092cb5ea36aaadd0bc932403220
+ * Date: Tue Jun 17 21:03:41 2014 +0800
+ * Commit: 4242c63b75b0ef58068255f61218fb65ab8bdb8e
  */
 (function(window,document,undefined){
 
@@ -5113,7 +5113,7 @@ widget("setting",{
 		//this._initEvents();
 		var copyright = this.options.copyright;	
 		if( copyright ) {
-			copyright = copyright === true ? '<p style="margin: 5px 10px;"><a class="webim-gray" href="http://nextalk.im/" target="_blank">Powered by <strong>NexTalk</strong><em>&nbsp5.4.1</em></a></p>' : copyright;
+			copyright = copyright === true ? '<p style="margin: 5px 10px;"><a class="webim-gray" href="http://nextalk.im/" target="_blank">Powered by <strong>NexTalk</strong><em>&nbsp5.5</em></a></p>' : copyright;
 			this.element.appendChild(createElement(copyright));
 		}
 	},
