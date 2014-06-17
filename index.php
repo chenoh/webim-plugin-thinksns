@@ -6,11 +6,14 @@
  * @author ery lee <ery.lee at gmail.com>
  * @copyright   (C) 2014 NexTalk.IM
  * @license     http://nextalk.im/license
- * @lastmodify  2014-04-23
- * @version 5.4
+ * @lastmodify  2014-06-17
+ * @version 5.5
  */ 
 
-if(phpversion() < '5.3.10') { exit('PHP version should be > 5.3.10'); }
+// Die if PHP is not new enough
+if (version_compare( PHP_VERSION, '4.3', '<' ) ) {
+	die( sprintf( 'Your server is running PHP version %s but webim requires at least 4.3', PHP_VERSION ) );
+}
 
 /**
  * Env
@@ -33,12 +36,21 @@ require_once (SITE_PATH . '/core/core.php');
 /**
  * Configuration
  */
-$IMC = model('Xdata')->get('hook_webim_plugin:config');
+$IMC = require('config.php');
 
-if(!$IMC or count($IMC) == 0) { $IMC = require('config.php'); }
+$_CFG = model('Xdata')->get('hook_webim_plugin:config');
+
+if( $_CFG && count($_CFG) > 0 ) {
+    
+    $IMC = array_merge($IMC, $_CFG); 
+
+}
 
 if( !$IMC['isopen'] ) exit('WebIM Not Opened');
 
+/**
+ * Init database
+ */
 $IMC['dbuser'] = C('DB_USER');
 $IMC['dbpassword'] = C('DB_PWD');
 $IMC['dbname'] = C('DB_NAME');
@@ -73,44 +85,40 @@ if( defined('WEBIM_DEBUG') ) {
 
 if( !$IMC['isopen'] ) exit();
 
-define('WEBIM_ROOT', dirname(__FILE__));
-
-define('WEBIM_SRC', WEBIM_ROOT . '/src');
+/**
+ * load libraries
+ */
+if( $IMC['visitor'] ) {
+    require 'lib/GeoIP.class.php';
+}
 
 /**
  *
  * WebIM Libraries
  *
- * https://github.com/webim/webim-php
+ * https://github.com/webim/webim-for-php4
  *
  */
-require WEBIM_ROOT.'/vendor/autoload.php';
+require 'lib/http_client.php';
+require 'lib/webim_client.class.php';
+require 'lib/webim_common.func.php';
+require 'lib/webim_db.class.php';
+require 'lib/webim_model.class.php';
+require 'lib/webim_plugin.class.php';
+require 'lib/webim_router.class.php';
+require 'lib/webim_app.class.php';
+
+require 'webim_plugin_thinksns.class.php';
 
 /**
- * Model
+ * webim route
  */
-require WEBIM_SRC . '/Model.php';
+$app = new webim_app();
 
-/**
- * Base Plugin
- */
-require WEBIM_SRC . '/Plugin.php';
+$app->plugin(new webim_plugin_thinksns());
 
-/**
- * Router
- */
-require WEBIM_SRC . '/Router.php';
+$app->model(new webim_model());
 
-/**
- * WebIM APP
- */
-require WEBIM_SRC . '/App.php';
+$app->run();
 
-/**
- * WebIM Plugin for ThinkSNS
- */
-require WEBIM_ROOT . '/ThinkSNS_Plugin.php';
-
-\WebIM\App::run( new \WebIM\ThinkSNS_Plugin() );
-
-
+?>

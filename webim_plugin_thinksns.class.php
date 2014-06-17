@@ -7,7 +7,7 @@
  * @copyright   2014 NexTalk.IM
  * @link        http://github.com/webim/webim-for-thinksns
  * @license     MIT LICENSE
- * @version     5.4.1
+ * @version     5.5
  * @package     WebIM-for-ThinkSNS
  *
  * MIT LICENSE
@@ -32,17 +32,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace WebIM;
-
 /**
  * Webim-for-ThinkSNS Plugin
  */
-class ThinkSNS_Plugin extends Plugin {
+class webim_plugin_thinksns extends webim_plugin {
 
 	/*
-	 * Init User
+	 * constructor
 	 */
     public function __construct() { 
+        parent::__construct();
+    }
+
+	/*
+	 * old constructor
+	 */
+    function webim_plugin_thinksns() {
+        $this->__construct();
     }
 
     /**
@@ -107,7 +113,7 @@ class ThinkSNS_Plugin extends Plugin {
 		$admins = model('User')->getUserInfoByUids($admin_uids);
 		if(!$admins) $admins = array();
 		//转换为Webim Buddy对象.
-		return $this->toBuddies(array_merge($admins, $friends));
+		return $this->_to_buddies(array_merge($admins, $friends));
     }
 
     private function _fid($follow) {
@@ -123,18 +129,18 @@ class ThinkSNS_Plugin extends Plugin {
      *
 	 * Buddy
 	 */
-	public function buddiesByIds($uid, $ids) {
+	public function buddies_by_ids($uid, $ids) {
         if( count($ids) === 0 ) return array();
 		//根据id列表获取好友列表
 		$friends = model('User')->getUserInfoByUids($ids);
         if(!$friends) $friends = array();
-        return $this->toBuddies($friends);
+        return $this->_to_buddies($friends);
     }
 
 	/*
 	 * User对象转化为Buddy对象
 	 */
-	private function toBuddies($users, $group = "friend") {
+	private function _to_buddies($users, $group = "friend") {
 		$buddies = array();
 		foreach($users as $user) {
 			$buddies[] = (object)array(
@@ -182,7 +188,8 @@ class ThinkSNS_Plugin extends Plugin {
 	 * Room
      *
 	 */
-	public function roomsByIds($uid, $ids) {
+	public function rooms_by_ids($uid, $ids) {
+		return array( );	
     }
 
     /**
@@ -192,6 +199,7 @@ class ThinkSNS_Plugin extends Plugin {
      * 
      */
     public function members($room) {
+		return array( );	
     }
 
 
@@ -265,3 +273,4 @@ class ThinkSNS_Plugin extends Plugin {
 
 }
 
+?>

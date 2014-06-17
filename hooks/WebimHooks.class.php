@@ -33,12 +33,16 @@ class WebimHooks extends Hooks
         }
         $cfg['apikey'] = $_POST['apikey'];
 
-        if(!$_POST['server']) {
+        if(!$_POST['host']) {
 			$this->error('IM服务器不能为空');
             return;
         }
-        $cfg['server'] = $_POST['server'];
-
+        if(!$_POST['port']) {
+			$this->error('IM服务器端口不能为空');
+            return;
+        }
+        $cfg['host'] = $_POST['host'];
+        $cfg['port'] = $_POST['port'];
 		$cfg['isopen'] = $this->toBool($_POST['isopen']);
         $cfg['local'] = $_POST['local'];
         $cfg['emot'] = $_POST['emot'];

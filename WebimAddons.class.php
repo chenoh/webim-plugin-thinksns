@@ -14,7 +14,7 @@ class WebimAddons extends NormalAddons
     protected $site    = 'http://nextalk.im';
     protected $info    = 'WebIM微博站内即时消息';
     protected $pluginName = 'WebIM';
-    protected $tsVersion  = "3.0";                               
+    protected $tsVersion  = "3.0";
 
     /**
      * getHooksInfo

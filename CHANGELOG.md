@@ -4,6 +4,7 @@ CHANGELOG
 v5.5 (2014/06/06)
 -----------------------------
 * detached and draggable window
+* user webim-for-php4 to replace php5 lib
 
 
 v5.4.2 (2014/04/25)
