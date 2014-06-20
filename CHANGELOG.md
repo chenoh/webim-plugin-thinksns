@@ -1,11 +1,13 @@
 CHANGELOG
 =========================
 
-v5.5 (2014/06/06)
+v5.5 (2014/06/20)
 -----------------------------
-* detached and draggable window
-* user webim-for-php4 to replace php5 lib
-
+* 升级lib, static到5.5版本
+* 支持可移动聊天窗口
+* 活动聊天窗口宽度调整
+* 支持返回好友presences
+* 用户头像字段变更: pic_url -> avatar
 
 v5.4.2 (2014/04/25)
 -----------------------------

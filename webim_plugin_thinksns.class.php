@@ -65,7 +65,7 @@ class webim_plugin_thinksns extends webim_plugin {
 		return (object) array (
 			'id'		=> (string)$uid,
 			'nick'		=> $user['uname'],
-			'pic_url'	=> $user['avatar_small'],
+			'avatar'	=> $user['avatar_small'],
 			'url'		=> $user['space_url'],
 			'status'	=> $user['intro'],
             'role'      => (isset($user['admin_level']) && $user['admin_level']) ? 'admin' : 'user',
@@ -86,7 +86,7 @@ class webim_plugin_thinksns extends webim_plugin {
 	 * 	id:         uid
 	 * 	uid:        uid
 	 *	nick:       nick
-	 *	pic_url:    url of photo
+	 *	avatar:     url of photo
      *	presence:   online | offline
 	 *	show:       available | unavailable | away | busy | hidden
 	 *  url:        url of home page of buddy 
@@ -148,7 +148,7 @@ class webim_plugin_thinksns extends webim_plugin {
 				'id'		=> (string)$user['uid'],
 				'group'		=> $group,
 				'nick'		=> $user['uname'],
-				'pic_url' 	=> $user['avatar_small'],
+				'avatar' 	=> $user['avatar_small'],
 				'url'		=> $user['space_url'],
 				'status'	=> $user['intro'],
 			);
@@ -168,7 +168,7 @@ class webim_plugin_thinksns extends webim_plugin {
 	 *	id:		    Room ID,
 	 *	nick:	    Room Nick
 	 *	url:	    Home page of room
-	 *	pic_url:    Pic of Room
+	 *	avatar:     Pic of Room
 	 *	status:     Room status 
 	 *	count:      count of online members
 	 *	all_count:  count of all members
