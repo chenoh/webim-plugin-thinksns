@@ -9,7 +9,7 @@ return array (
   'domain' => 'localhost',
   'apikey' => 'public',
   'host' => 't.nextalk.im',
-  'port'    => '8080',
+  'port'    => '8000',
   'emot' => 'default',
   'theme' => 'base',
   'opacity' => '80',
