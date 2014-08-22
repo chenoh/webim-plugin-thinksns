@@ -31,7 +31,10 @@
 		upload: path + "/static/images/upload.php"
 	} );
 
-	webim.ui.emot.init({"dir": path + "/static/images/emot/default"});
+    if( !_IMC.emot ) { _IMC.emot = "default"; }
+	webim.ui.emot.init({
+        "dir": path + "/static/images/emot/" + _IMC.emot,
+        "ext": "png"});
 	var soundUrls = {
 		lib: path + "/static/assets/sound.swf",
 		msg: path + "/static/assets/sound/msg.mp3"
@@ -61,8 +64,8 @@
     window.webimUI = ui;
 
 	if( _IMC.user ) im.setUser( _IMC.user );
-	if( _IMC.menu ) ui.addApp("menu", { "data": _IMC.menu } );
-	if( _IMC.enable_shortcut ) ui.layout.addShortcut( _IMC.menu );
+	if( _IMC.enable_menu && _IMC.menu ) ui.addApp("menu", { "data": _IMC.menu } );
+	if( _IMC.enable_shortcut && _IMC.menu ) ui.layout.addShortcut( _IMC.menu );
 
 	ui.addApp("buddy", {
 		showUnavailable: _IMC.show_unavailable,
