@@ -5,8 +5,8 @@
  * Copyright (c) 2014 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Fri Jul 11 11:40:50 2014 +0800
- * Commit: d4ca621cc222183abececea056397b561944979b
+ * Date: Fri Dec 12 20:01:26 2014 +0800
+ * Commit: 74b659e27705eabe0aa565fdb4d64660943be20b
  */
 (function(window, document, undefined){
 
@@ -1292,7 +1292,7 @@ extend(webim.prototype, {
 	_init: function() {
 		var self = this, options = self.options;
 		//Default user status info.
-		self.data = { 
+		self.data = {
 			user: {
 				presence: 'offline', 
 				show: 'unavailable'
@@ -1303,7 +1303,7 @@ extend(webim.prototype, {
 
 		ajax.settings.dataType = options.jsonp ? "jsonp" : "json";
 
-		self.status = new webim.status();
+		self.status = new webim.status(null, options);
 		self.setting = new webim.setting();
         self.models['presence'] = new webim.presence();
 		self.buddy = new webim.buddy();
@@ -1742,11 +1742,13 @@ model("setting",{
 //}
 
 model( "status", {
-	key:"_webim"
+	key:"_webim",
+    storage: "local",
+    domain: document.domain
 }, {
 	_init:function() {
 		var self = this, data = self.data, key = self.options.key;
-		var store = window.localStorage;
+		var store = (self.options.storage == "local") && window.localStorage;
 		if( store ) {
 			//无痕浏览模式
 			try {
@@ -1786,12 +1788,12 @@ model( "status", {
 		this._save( {} );
 	},
 	_save: function( data ) {
-		var self = this, key = self.options.key;
+		var self = this, key = self.options.key, domain = self.options.domain;
 		self.data = data;
 		data = JSON.stringify( data );
 		self.store ? self.store.setItem( key, data ) : cookie( key, data, {
 			path: '/',
-			domain: document.domain
+			domain: domain
 		} );
 	}
 } );
@@ -1898,6 +1900,22 @@ model( "buddy", {
 				success: self.set
 			} );
 		}
+	},
+	search: function( val, callback ) {
+		var self = this, options = self.options;
+		//5.8 remove seach
+		function succ(data) {
+			self.set(data);
+			setTimeout(callback, 500);
+		}
+		ajax( {
+			type: "get",
+			url: route( "search" ),
+			cache: false,
+			data:{ nick: val, csrf_token: webim.csrf_token },
+			context: self,
+			success: succ
+		} );
 	},
 	set: function( addData ) {
 		var self = this, data = self.data, dataHash = self.dataHash, status = {};
@@ -2299,8 +2317,8 @@ model("history", {
  * Copyright (c) 2013 Arron
  * Released under the MIT, BSD, and GPL Licenses.
  *
- * Date: Fri Jul 18 11:03:56 2014 +0800
- * Commit: 0b20cb1bd0a889b343c46259a69f53f7d652dbc9
+ * Date: Fri Dec 12 20:07:44 2014 +0800
+ * Commit: c012c57fc81abd084df95aa54b48f3515ba7153e
  */
 (function(window,document,undefined){
 
@@ -2912,6 +2930,23 @@ i18n.store = function(locale, data){
  *
  */
 
+/*----------------------------------------
+ Windows size
+----------------------------------------*/
+function winSize() {
+	var w = window,
+    d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0],
+    x = w.innerWidth || e.clientWidth || g.clientWidth,
+    y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+	return {x: x, y: y};
+}
+
+/*----------------------------------------
+ Webim UI
+----------------------------------------*/
+
 function webimUI(element, options){
 	var self = this;
 	self.element = element;
@@ -3171,7 +3206,7 @@ widget("window", {
 	html: function(obj){
 		html( this.$.content, obj );
 	},
-	subHeader: function(obj){
+	subHeader: function(obj) {
 		html( this.$.subHeader, obj );
 	},
 	_init: function(element, options){
@@ -3189,9 +3224,9 @@ widget("window", {
 		       	hide($.tabClose);
 		       	hide($.close);
 		}
-		if(options.isMinimize){
+		if(options.isMinimize) {
 			self.minimize();
-		}else{
+        }else{
 			self.restore();
 		}
         self.position = {right: 0, bottom: 0};
@@ -3263,7 +3298,7 @@ widget("window", {
 		if(!self.options.sticky) self.minimize();
 		self.trigger("deactivate");
 	},
-	_setVisibile: function(){
+	_setVisibile: function() {
 		var self = this, $ = self.$;
         if(self.isDetached()) { 
             hide($.tab); 
@@ -3273,18 +3308,33 @@ widget("window", {
 		self.activate();
 		_countDisplay($.tabCount, 0);
 	},
-	maximize: function(){
-		var self = this;
-		if(self.isMaximize())return;
+	maximize: function() {
+		var self = this, win = self.$.window;
+		//TODO: 5.8 max window, is this ok? 
+		if(self.isMaximize()) {
+			//TODO: NORMAL, fixme
+			window.onresize = null;
+			removeClass(win, "webim-maximized-window");
+			self._changeState("restore");
+			return;
+		}
+		addClass(win, "webim-maximized-window");
 		self._setVisibile();
 		self._changeState("maximize");
+		window.onresize = function() {
+			self._changeState("maximize");
+		};
 	},
+
 	restore: function(){
-		var self = this;
-		if(hasClass(self.element, "webim-window-normal"))return;
+		var self = this, win = self.$.window;
+		if(hasClass(self.element, "webim-window-normal")) return;
+        //5.8 max window...
+        if(hasClass(win, "webim-maximized-window")) { self.maximize(); return; }
 		self._setVisibile();
 		self._changeState("restore");
 	},
+
 	minimize: function(){
 		var self = this;
 		if(self.isMinimize())return;
@@ -4125,15 +4175,17 @@ widget("layout",{
 	addChat: function(type, id, chatOptions, winOptions, nick){
 		type = _tr_type(type);
 		var self = this;
-		if(self.chat(type, id))return;
-
 		var  panels 	= self.panels;
 		var panelId = _id_with_type(type, id);
+        
+        //5.8 return win;
+		if(self.chat(type, id)) { return self.tabs[panelId]; }
 
 		var win = self.tabs[panelId] = new webimUI.window(null, extend({
 			isMinimize: self.activeTabId || !self.options.chatAutoPop,
 			tabWidth: self.tabWidth -2,
             detachable: self.options.detachable || false,
+			maximizable: self.options.maximizable || false,
 			titleVisibleLength: 9
 		}, winOptions))
 			.bind("close", function(){ 
@@ -4156,6 +4208,7 @@ widget("layout",{
 		!win.isMinimize() && self._changeActive(panelId);
 		self._fitUI();
 		//else self.focusChat(panelId);
+        return win;
 	},
 	removeChat: function(type, id){
 		//ids = idsArray(ids);
@@ -4642,7 +4695,7 @@ app( "chat", function( options ) {
 	return chatUI;
 } );
 
-widget("chat",{
+widget("chat", {
 	tpl_header: '<div><div id=":user" class="webim-user"> \
 	<a id=":userPic" class="webim-user-pic ui-corner-all ui-state-active" href="#id"><img width="50" height="50" src="" defaultsrc="" onerror="var d=this.getAttribute(\'defaultsrc\');if(d && this.src!=d)this.src=d;" class="ui-corner-all"></a> \
 	<span id=":userStatus" title="" class="webim-user-status">&nbsp;</span> \
@@ -4667,7 +4720,7 @@ widget("chat",{
 	</div> \
 	</div>'
 },{
-	_init: function(){
+	_init: function() {
 		var self = this, element = self.element, options = self.options, win = options.window;
 		var history = self.history = new webimUI.history(null,{
 			user: options.user,
@@ -4757,15 +4810,43 @@ widget("chat",{
 		if( main.scrollTop != main.scrollHeight)
 			main.scrollTop = main.scrollHeight;
 	},
-	_fitUI: function(e){
+
+	_fitUI: function(e) {
 		var self = this, win = self.window, $ = self.$;
 		self._adjustContent();
-
 	},
-	_bindWindow: function(){
-		var self = this, win = self.window;
-		win.bind("displayStateChange", function(e, type){
-			if(type != "minimize"){
+
+	_bindWindow: function() {
+
+		var self = this, options = self.options, win = self.window, $ = self.$, content = $.content, main = $.main;
+		
+		win.bind("displayStateChange", function(e, type) {
+
+			//TODO: 5.8 max window
+			if(type == "maximize") {
+				//TODO: FIXME Later... compute when init...
+				var sz = winSize(), height = (sz.y - 128);
+				content.style.height = main.style.height = height + "px";
+				//TODO: should be moved to 'member' plugin... 
+				if(options.member) {
+					var sidebar = $.sidebar.firstChild;
+					sidebar.style.marginTop = "0px";
+					sidebar.style.height = (height - 1) + "px";
+					sidebar.style.left = "-1px";
+					main.style.marginLeft = "8.2em"; //TODO: fix later...
+				}
+			} else if(type == "restore") {
+				content.style.height = main.style.height = "";
+				if(options.member) {
+					//TODO: should be moved to 'member' plugin... 
+					var sidebar = $.sidebar.firstChild;
+					sidebar.style.marginTop = "";
+					sidebar.style.height = "";
+					sidebar.style.left = "";
+					main.style.marginLeft = "0px";
+				}
+			}
+			if(type != "minimize") {
 				//fix firefox
 				window.setTimeout(function(){self.$.input.focus();},0);
 				//self.$.input.focus();
@@ -5514,6 +5595,11 @@ app("buddy", function( options ){
 		}
 	});
 
+	//5.8
+	buddyUI.bind("search", function(e, val, callback) {
+		im.buddy.search(val, callback);
+	});
+
 	var mapId = function(a){ return isObject(a) ? a.id : a };
 	var grepVisible = function(a){ return a.show != "invisible" && a.presence == "online"};
 	var grepInvisible = function(a){ return a.show == "invisible"; };
@@ -5559,7 +5645,7 @@ app("buddy", function( options ){
 	buddyUI.offline();
 	im.bind( "beforeOnline", function(){
 		buddyUI.online();
-	}).bind("online", function() {
+	}).bind( "online", function() {
 		userUI && buddyUI.window.subHeader( userUI.element );
 		buddyUI.titleCount();
 	}).bind( "offline", function( type, msg ) {
@@ -5570,7 +5656,7 @@ app("buddy", function( options ){
 	return buddyUI;
 });
 
-widget("buddy",{
+widget("buddy", {
 	template: '<div id="webim-buddy" class="webim-buddy webim-flex webim-box">\
 		<div id=":search" class="webim-buddy-search ui-state-default ui-corner-all"><em class="ui-icon ui-icon-search"></em><input id=":searchInput" type="text" value="" /></div>\
 			<div class="webim-buddy-content webim-flex" id=":content">\
@@ -5607,7 +5693,7 @@ widget("buddy",{
 
 	},
 	_initEvents: function(){
-		var self = this, $ = self.$, search = $.search, input = $.searchInput, placeholder = i18n("search buddy"), activeClass = "ui-state-active";
+		var self = this, $ = self.$, options = self.options, search = $.search, input = $.searchInput, placeholder = i18n("search buddy"), activeClass = "ui-state-active";
 		addEvent(search.firstChild, "click",function(){
 			input.focus();
 		});
@@ -5620,28 +5706,44 @@ widget("buddy",{
 			removeClass(search, activeClass);
 			if(this.value == "")this.value = placeholder;
 		});
-		addEvent(input, "keyup", function(){
+
+
+
+		//5.8 vsn: remote search
+		addEvent(input, "keyup", function(e) {
+			
+			function localSearch() {
+				//hide all first
+				each(self.groups, function(n, grp) { hide(grp.el) });      
+				each(self.on_li, function(n,li) { hide(li); });
+				each(self.li, function(n,li) { hide(li); });
+				//show searched
+				each(self.li, function(id, li){
+					 if ( (li.text || li.innerHTML.replace(/<[^>]*>/g, "")).indexOf(val) >= 0 ) {
+						 var grp = self.li_group[id];
+						 if(grp) show(grp.el);
+						 show(li);
+					 }
+				});
+			}
+
 			var val = this.value;
-            if(val == undefined || val == "") {
-                //show all when finished
-                each(self.groups, function(n, grp) { show(grp.el) });
-                each(self.on_li, function(n,li) { show(li); });
-                each(self.li, function(n,li) { show(li); });
-            } else {
-                //hide all first
-                each(self.groups, function(n, grp) { hide(grp.el) });      
-                each(self.on_li, function(n,li) { hide(li); });
-                each(self.li, function(n,li) { hide(li); });
-                //show searched
-                each(self.li, function(id, li){
-                     if ( (li.text || li.innerHTML.replace(/<[^>]*>/g, "")).indexOf(val) >= 0 ) {
-                         var grp = self.li_group[id];
-                         if(grp) show(grp.el);
-                         show(li);
-                     }
-                });
-            }
+			if(val == undefined || val == "") {
+				//show all when finished
+				each(self.groups, function(n, grp) { show(grp.el) });
+				each(self.on_li, function(n,li) { show(li); });
+				each(self.li, function(n,li) { show(li); });
+			} else {
+				//5.8 add
+				if(options.search && options.search == 'remote') { //remote, enter key
+					(e.keyCode == 13) && self.trigger("search", [val, localSearch]);
+				} else {
+					localSearch();
+				}
+			}
 		});
+		
+	
 /*
 var a = $.online.firstChild;
 addEvent(a, "click", function(e){
@@ -5658,7 +5760,7 @@ self.trigger("offline");
 	},
     //FIXME Later: should be moved to model...
 	titleCount: function(){
-		var self = this, size = self.size, win = self.window, empty = self.$.empty, element = self.element;
+		var self = this, size = self.size, win = self.window, empty = self.$.empty, element = self.element, options = self.options;
         var ol_sz = 0;
         each(self.presences, function(id, p) { if(p.o) ol_sz++; });
 		win && win.title(self.options.title + "[" + ol_sz + "/" + (size ? size : "0") + "]");
@@ -5667,10 +5769,15 @@ self.trigger("offline");
 		}else{
 			hide(empty);
 		}
-		if(size > 8){
+		//5.8 remote search...
+		if(options.search && options.search == 'remote') {
 			self.scroll(true);
-		}else{
-			self.scroll(false);
+		} else {
+			if(size > 8){
+				self.scroll(true);
+			}else{
+				self.scroll(false);
+			}
 		}
 	},
 
@@ -6625,7 +6732,7 @@ widget("chatbtn",
 			if(id && children(el).length == 0 && text && (elementId || className.test(el.className))){
 				anthors[id] ? anthors[id].push(el) :(anthors[id] = [el]);
 				list[id] = {id: id, name: text};
-				var icon = createElement('<i class="webim-chaticon"><em>');;
+				var icon = createElement('<i class="webim-chaticon"><em></em></i>');
 				el.appendChild( icon );
 				el.icon = icon;
 				el.title = i18n("offline");
