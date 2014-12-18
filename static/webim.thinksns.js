@@ -47,8 +47,8 @@
 		//layout: "layout.popup",
         layoutOptions: {
             unscalable: _IMC.is_visitor,
-            detachable: true
-
+            //detachable: true, //true
+            maximizable: true
         },
 		buddyChatOptions: {
             downloadHistory: !_IMC.is_visitor,

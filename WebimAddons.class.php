@@ -91,20 +91,6 @@ class WebimAddons extends NormalAddons
         ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
         D()->execute($sql);
 
-        $sql = "CREATE TABLE `{$db_prefix}webim_rooms` (
-              `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-              `owner` varchar(40) NOT NULL,
-              `name` varchar(40) NOT NULL,
-              `nick` varchar(60) NOT NULL DEFAULT '',
-              `topic` varchar(60) DEFAULT NULL,
-              `url` varchar(100) DEFAULT '#',
-              `created` datetime DEFAULT NULL,
-              `updated` datetime DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              UNIQUE KEY `webim_room_name` (`name`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
-        D()->execute($sql);
-
         $sql = "CREATE TABLE `{$db_prefix}webim_members` (
               `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
               `room` varchar(60) NOT NULL,
